@@ -2,7 +2,7 @@ import React from "react";
 import { inject, observer } from "mobx-react";
 import {
   ScrollView,
-  TouchableWithoutFeedback,
+  TouchableOpacity,
   Dimensions,
   BackHandler
 } from "react-native";
@@ -17,7 +17,7 @@ import images from "../../constants/images";
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class AuthScreen extends React.Component {
   constructor(props) {
@@ -44,23 +44,28 @@ export default class AuthScreen extends React.Component {
       Phone: PhoneMasked
     });
 
-    this.props.auth.set("PhoneMasked", PhoneMasked);
+    this.props.member.set("PhoneMasked", PhoneMasked);
 
     let Phone = PhoneMasked.replace(/[^0-9]+/g, "");
 
-    this.props.auth.set("Phone", Phone);
+    this.props.member.set("Phone", Phone);
 
     // Передать номер телефона на сервер и запросить sms
     if (Phone.length == 11) {
-      this.props.auth.RequestCode();
+      this.props.member.RequestCode();
     }
   };
 
   renderTOS = () => {
     return (
-      <TouchableWithoutFeedback
+      <TouchableOpacity
+        activeOpacity={1}
         onPress={() => {
           WebBrowser.openBrowserAsync("https://sparkly.website/");
+        }}
+        hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        style={{
+          marginTop: verticalScale(60)
         }}
       >
         <TOS>
@@ -68,7 +73,7 @@ export default class AuthScreen extends React.Component {
           <TOSLink>пользовательского соглашения</TOSLink> и соглашаетесь на
           обработку <TOSLink>персональных данных</TOSLink>
         </TOS>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     );
   };
 
@@ -101,7 +106,7 @@ export default class AuthScreen extends React.Component {
           autoFocus={true}
           allowFontScaling={false}
           textContentType={"telephoneNumber"}
-          value={this.props.auth.Phone}
+          value={this.props.member.Phone}
         />*/}
         <TextInputMask
           ref={ref => (this.phoneField = ref)}
@@ -128,7 +133,7 @@ export default class AuthScreen extends React.Component {
           onChangeText={value => {
             this.onChangePhoneInput(value);
           }}
-          //value={this.props.auth.Phone}
+          //value={this.props.member.Phone}
           value={this.state.Phone}
           maxLength={18}
           autoCompleteType="off"
@@ -188,10 +193,9 @@ const InputUnderline = styled.View`
 `;
 
 const TOS = styled.Text`
-  width: ${scale(220) + `px`};
+  width: ${scale(240) + `px`};
   font-size: ${scale(12) + `px`};
   line-height: ${scale(16) + `px`};
-  margin-top: ${verticalScale(60) + `px`};
   margin-bottom: ${verticalScale(10) + `px`};
   margin-left: ${scale(40) + `px`};
   font-family: "IBMPlexMono";

@@ -15,7 +15,7 @@ import images from "../../constants/images";
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class FacultyScreen extends React.Component {
   constructor(props) {
@@ -56,8 +56,8 @@ export default class FacultyScreen extends React.Component {
   };
 
   continue = () => {
-    this.props.auth.set("Faculty", this.state.Faculty);
-    this.props.auth.FacultySelect();
+    this.props.member.set("Faculty", this.state.Faculty);
+    this.props.member.FacultySelect();
   };
 
   inputBlur = () => {
@@ -84,7 +84,7 @@ export default class FacultyScreen extends React.Component {
         </TouchableOpacity>
         <Subtitle>
           найди друзей в{" "}
-          <SubtitleCite>{this.props.auth.UniversityTitle}</SubtitleCite>
+          <SubtitleCite>{this.props.member.UniversityTitle}</SubtitleCite>
         </Subtitle>
         <Title>а какой{"\n"}факультет?</Title>
 

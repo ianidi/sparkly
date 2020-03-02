@@ -1,72 +1,64 @@
 import React from "react";
-import { inject, observer } from "mobx-react";
-import { View, Button } from "react-native";
-import { CometChat } from "@cometchat-pro/react-native-chat";
-import { decode, encode } from "base-64";
+import { Dimensions } from "react-native";
+import SafeAreaView from "react-native-safe-area-view";
+import { GiftedChat } from "../components/Chat";
+import ChatHeader from "../components/ChatHeader";
 
-if (!global.btoa) {
-  global.btoa = encode;
-}
+const { width, height } = Dimensions.get("screen");
 
-if (!global.atob) {
-  global.atob = decode;
-}
+export default class Example extends React.Component {
+  state = {
+    loaded: false,
+    messages: []
+  };
 
-this.DOMParser = require("xmldom").DOMParser;
-
-@inject("main")
-@inject("auth")
-@observer
-export default class LoginScreen extends React.Component {
-  cometchatLogin() {
-    let appID = "12853aafe8ab275";
-    let appRegion = "eu";
-    var appSettings = new CometChat.AppSettingsBuilder()
-      .subscribePresenceForAllUsers()
-      .setRegion(appRegion)
-      .build();
-
-    CometChat.init(appID, appSettings).then(
-      () => {
-        CometChat.getLoggedinUser().then(user => {
-          console.log("get logged in user =>", user);
-          if (user !== null) {
-            this.props.navigation.navigate("Home");
+  componentDidMount() {
+    this.setState({
+      loaded: true,
+      messages: [
+        {
+          _id: 1,
+          text: "Привет",
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: "React Native",
+            avatar: "https://placeimg.com/140/140/any"
           }
-        });
-        console.log("Initialization completed successfully");
-      },
-      error => {
-        console.log("Initialization failed with error:", error);
-      }
-    );
-
-    console.log("vffvdf");
-    var authToken = "1_8fbfb58720afdcc38837bd30d1382201275152c2";
-    try {
-      CometChat.login(authToken).then(
-        User => {
-          // var userName = user.name;
-          // console.log("Login Successful:", { userName });
-
-          console.log("Login successfully:", { User });
-          // User loged in successfully.
-        },
-        error => {
-          console.log("Login failed with exception:", { error });
-          // User login failed, check error and take appropriate action.
         }
-      );
-    } catch (err) {
-      console.log(err);
-    }
+      ]
+    });
+  }
+
+  onSend(messages = []) {
+    this.setState(previousState => ({
+      messages: GiftedChat.append(previousState.messages, messages)
+    }));
   }
 
   render() {
     return (
-      <View>
-        <Button onPress={() => this.cometchatLogin()} title={"fgdfd"} />
-      </View>
+      <SafeAreaView
+        style={{
+          flex: 1,
+          backgroundColor: "#fff",
+          width: width
+        }}
+      >
+        <ChatHeader />
+        {this.state.loaded && (
+          <GiftedChat
+            messages={this.state.messages}
+            onSend={messages => this.onSend(messages)}
+            user={{
+              _id: 1
+            }}
+            renderAvatar={null}
+            locale={"ru"}
+            wrapInSafeArea={false}
+          />
+        )}
+      </SafeAreaView>
     );
   }
 }

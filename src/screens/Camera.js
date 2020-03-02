@@ -12,24 +12,20 @@ import {
 } from "react-native";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
+import { withModal } from "react-native-modalfy";
 import images from "../constants/images";
 import { Camera } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from "expo-file-system";
 import * as Permissions from "expo-permissions";
-import { isIphoneX } from "react-native-iphone-x-helper";
 import {
-  Ionicons,
-  MaterialIcons,
-  Foundation,
-  MaterialCommunityIcons,
-  Octicons
-} from "@expo/vector-icons";
+  getStatusBarHeight,
+  getBottomSpace
+} from "react-native-iphone-x-helper";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import UploadProgress from "../components/UploadProgress";
 //import FormData from "form-data";
-import axios from "axios";
 import { BASE_URL } from "../constants";
-import { apiUpload } from "../service/Api";
-import { message } from "../service/Message";
 
 const landmarkSize = 2;
 
@@ -66,9 +62,9 @@ const wbIcons = {
 };
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
-export default class CameraScreen extends React.Component {
+class CameraScreen extends React.Component {
   state = {
     flash: "off",
     zoom: 0,
@@ -112,6 +108,32 @@ export default class CameraScreen extends React.Component {
       permissionsGranted: granted
     });
   }
+
+  openGallery = async () => {
+    let granted = true;
+
+    if (Platform.OS === "ios") {
+      let cameraGranted = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+      if (cameraGranted.status !== "granted") {
+        granted = false;
+      }
+    }
+
+    if (!granted) {
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      //base64: true,
+      exif: true,
+      quality: 0.8
+    });
+
+    if (!result.cancelled) {
+      this.imagePreview(result.uri);
+    }
+  };
 
   componentDidMount() {
     FileSystem.makeDirectoryAsync(
@@ -166,7 +188,7 @@ export default class CameraScreen extends React.Component {
     if (this.camera) {
       this.camera.takePictureAsync({
         onPictureSaved: this.onPictureSaved,
-        base64: true,
+        //base64: true,
         exif: true,
         quality: 0.8
       });
@@ -233,10 +255,15 @@ export default class CameraScreen extends React.Component {
       from: photo.uri,
       to: directory
     });
-    this.onPictureSaved2(directory);
+    this.imagePreview(directory);
   };
 
-  onPictureSaved2 = async uri => {
+  imagePreview = uri => {
+    this.props.member.set("ImageUploadLocalURI", uri);
+    this.props.modal.openModal("CameraUploadPreview");
+  };
+
+  imageUpload = async uri => {
     try {
       const token = await AsyncStorage.getItem("@Api:token");
 
@@ -597,7 +624,18 @@ TODO:
       </View>
 
       <View style={styles.bottomBarContent}>
-        <View style={{ width: scale(75), height: scale(75) }} />
+        <View
+          style={{
+            width: scale(75),
+            height: scale(75),
+            alignItems: "flex-start",
+            justifyContent: "center"
+          }}
+        >
+          <TouchableOpacity onPress={this.openGallery} activeOpacity={0.8}>
+            <Gallery source={images.Gallery} />
+          </TouchableOpacity>
+        </View>
         <View style={{ width: scale(75), height: scale(75) }}>
           {this.state.isRecording == false && (
             <TouchableOpacity onPress={this.takePicture} activeOpacity={0.8}>
@@ -609,7 +647,8 @@ TODO:
           style={{
             width: scale(75),
             height: scale(75),
-            alignItems: "flex-end"
+            alignItems: "flex-end",
+            justifyContent: "center"
           }}
         >
           <TouchableOpacity onPress={this.toggleFacing} activeOpacity={0.8}>
@@ -671,9 +710,16 @@ TODO:
   }
 }
 
+export default withModal(CameraScreen);
+
 const CameraButton = styled.Image`
   width: ${scale(75) + `px`};
   height: ${scale(75) + `px`};
+`;
+
+const Gallery = styled.Image`
+  width: ${scale(40) + `px`};
+  height: ${scale(40) + `px`};
 `;
 
 const CameraReverse = styled.Image`
@@ -704,14 +750,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: verticalScale(20),
+    marginTop: verticalScale(20) + getStatusBarHeight(),
     paddingLeft: scale(25),
     paddingRight: scale(25)
   },
   bottomBar: {
     paddingLeft: scale(25),
     paddingRight: scale(25),
-    paddingBottom: isIphoneX ? 25 : 5,
+    paddingBottom: verticalScale(20) + getBottomSpace(),
     backgroundColor: "transparent"
   },
   bottomBarUpperContent: {

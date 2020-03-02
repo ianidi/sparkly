@@ -62,7 +62,8 @@ const Colors = {
     },
     btnPositive: {
       backgroundColor: "#fff",
-      height: verticalScale(90),
+      paddingTop: scale(25),
+      paddingBottom: scale(25),
       display: "flex",
       alignItems: "center",
       borderWidth: scale(1),
@@ -70,10 +71,10 @@ const Colors = {
       borderColor: "#525A71"
     },
     btnPositiveText: {
-      fontSize: scale(18),
-      lineHeight: scale(18),
-      fontFamily: "IBMPlexSans-Light",
-      color: "#525a71"
+      fontSize: scale(16),
+      lineHeight: scale(16),
+      fontFamily: "IBMPlexMono",
+      color: "#3B435A"
     }
   };
 

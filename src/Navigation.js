@@ -18,16 +18,17 @@ import UniversityScreen from "./screens/Auth/University";
 import FacultyScreen from "./screens/Auth/Faculty";
 import FeedScreen from "./screens/Feed";
 import CameraScreen from "./screens/Camera";
-import FeedSettingsScreen from "./screens/FeedSettings";
 import HomeScreen from "./screens/Home";
 import ProfileScreen from "./screens/Profile";
 import SettingsScreen from "./screens/Settings";
 import MessagesScreen from "./screens/Messages";
+import ChatScreen from "./screens/Chat";
+import InterestsScreen from "./screens/Interests";
 
 const Stack = createStackNavigator();
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class Navigation extends React.Component {
   render() {
@@ -62,7 +63,7 @@ export default class Navigation extends React.Component {
           }
         }}
       >
-        {this.props.auth.status == false ? (
+        {this.props.member.status == false ? (
           <>
             {this.props.main.onboadringComplete == false && (
               <Stack.Screen
@@ -93,8 +94,8 @@ export default class Navigation extends React.Component {
           </>
         ) : (
           <>
-            {this.props.auth.SignupComplete == false &&
-            this.props.auth.demoMode == false ? (
+            {this.props.member.SignupComplete == false &&
+            this.props.member.demoMode == false ? (
               <>
                 <Stack.Screen
                   name="NameGender"
@@ -180,8 +181,8 @@ export default class Navigation extends React.Component {
                   }}
                 />
                 <Stack.Screen
-                  name="Feed"
-                  component={FeedScreen}
+                  name="Chat"
+                  component={ChatScreen}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -189,15 +190,22 @@ export default class Navigation extends React.Component {
                   }}
                 />
                 <Stack.Screen
-                  name="FeedSettings"
-                  component={FeedSettingsScreen}
+                  name="Interests"
+                  component={InterestsScreen}
                   options={{
                     headerTitle: null,
                     headerShown: false,
-                    cardOverlayEnabled: true,
-                    ...TransitionPresets.ModalPresentationIOS
+                    ...TransitionPresets.FadeFromBottomAndroid
                   }}
-                  mode="modal"
+                />
+                <Stack.Screen
+                  name="Feed"
+                  component={FeedScreen}
+                  options={{
+                    headerTitle: null,
+                    headerShown: false,
+                    ...TransitionPresets.FadeFromBottomAndroid
+                  }}
                 />
               </>
             )}

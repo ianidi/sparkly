@@ -1,5 +1,6 @@
-export default Images = {
+export default images = {
   //Splash: require("../../assets/img/Splash.png"),
+  Avatar_temp: require("../../assets/img/Avatar_temp.png"),
   Onboarding_1: require("../../assets/img/Onboarding_1.png"),
   Onboarding_2: require("../../assets/img/Onboarding_2.png"),
   Onboarding_3: require("../../assets/img/Onboarding_3.png"),
@@ -8,10 +9,23 @@ export default Images = {
   AuthArrowBack: require("../../assets/img/AuthArrowBack.png"),
   CameraButton: require("../../assets/img/CameraButton.png"),
   CameraReverse: require("../../assets/img/CameraReverse.png"),
+  Gallery: require("../../assets/img/Gallery.png"),
   Info: require("../../assets/img/Info.png"),
-  User: require("../../assets/img/User.png"),
+  Member: require("../../assets/img/Member.png"),
   Settings: require("../../assets/img/Settings.png"),
   Camera: require("../../assets/img/Camera.png"),
   Message: require("../../assets/img/Message.png"),
-  My: require("../../assets/img/My.png")
+  MessageUnread: require("../../assets/img/MessageUnread.png"),
+  My: require("../../assets/img/My.png"),
+  HandSwipe: require("../../assets/img/HandSwipe.png"),
+  HandTap: require("../../assets/img/HandTap.png"),
+  MatchStar: require("../../assets/img/MatchStar.png"),
+  Close: require("../../assets/img/Close.png"),
+  ChatSend: require("../../assets/img/ChatSend.png"),
+  TickRead: require("../../assets/img/TickRead.png"),
+  NewMatchClose: require("../../assets/img/NewMatchClose.png"),
+  PopupClose: require("../../assets/img/PopupClose.png"),
+  ReportDots: require("../../assets/img/ReportDots.png"),
+  Like: require("../../assets/img/Like.png"),
+  LottieLike: require("../../assets/lottie/Like.json")
 };

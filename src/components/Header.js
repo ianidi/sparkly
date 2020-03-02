@@ -1,6 +1,6 @@
 import React from "react";
 import { TouchableOpacity, Dimensions } from "react-native";
-import * as NavigationService from "../service/NavigationService";
+import * as NavigationService from "../service/Navigation";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../constants/images";

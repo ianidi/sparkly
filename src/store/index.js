@@ -1,17 +1,17 @@
 import { persist } from "mst-persist";
 import AsyncStorage from "@react-native-community/async-storage";
-import { AuthStore } from "./auth";
+import { MemberStore } from "./member";
 import { MainStore } from "./main";
 import { FeedStore } from "./feed";
 
-const auth = AuthStore.create();
+const member = MemberStore.create();
 const main = MainStore.create();
 const feed = FeedStore.create();
 
-persist("@authStoreKey", auth, {
+persist("@memberStoreKey", member, {
   storage: AsyncStorage,
   jsonify: true
-}); //.then(() => console.log("authStore has been hydrated"));
+}); //.then(() => console.log("memberStore has been hydrated"));
 
 persist("@mainStoreKey", main, {
   storage: AsyncStorage,
@@ -24,7 +24,7 @@ persist("@feedStoreKey", feed, {
 });
 
 export const store = {
-  auth,
+  member,
   main,
   feed
 };

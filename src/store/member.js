@@ -1,10 +1,22 @@
 import { types, flow, applySnapshot } from "mobx-state-tree";
 import { api } from "../service/Api";
-import * as NavigationService from "../service/NavigationService";
+import * as NavigationService from "../service/Navigation";
 import { message } from "../service/Message";
 
-export const AuthStore = types
-  .model("AuthStore", {
+InterestModel = types
+  .model({
+    InterestID: types.identifierNumber,
+    Title: "",
+    Active: false
+  })
+  .actions(self => ({
+    toggle() {
+      self.Active = !self.Active;
+    }
+  }));
+
+export const MemberStore = types
+  .model("MemberStore", {
     loading: false, // Запрос к API в процессе, заблокироваать новые
     demoMode: false, // Пользователь пропустил регистрацию ("не сейчас")
     status: false, // Статус авторизации пользователя
@@ -16,7 +28,14 @@ export const AuthStore = types
     UniversityID: types.maybe(types.number), // ID университета, к которому относится пользователь
     UniversityTitle: types.maybe(types.string), // Название университета, к которому относится пользователь
     UniversityAbbr: types.maybe(types.string), // Аббревиатура университета, к которому относится пользователь
-    Faculty: types.maybe(types.string) // Произвольное описание факультета пользователя
+    Faculty: types.maybe(types.string), // Произвольное описание факультета пользователя
+    AvatarURL: types.maybeNull(types.string), // URL адрес аватара пользователя
+    Interests: types.array(InterestModel), // Интересы пользователя
+    RoommateSearch: false, // Показывать в анкете статус "ищу соседа"
+    ImageUploadLocalURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним. Используется для показа превью и загрузки на сервер в ленту
+    ImageUploadRestrictUniversity: false, // Переключатель при загрузке контента в ленту: показывать контент только студентам из моего университета
+    LastFeedLocalURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним и успешно загрузил на сервер
+    LastFeedRestrictUniversity: false // Переключатель при последней успешной загрузке контента в ленту: показывать контент только студентам из моего университета
   })
   .actions(self => ({
     clear() {
@@ -25,6 +44,9 @@ export const AuthStore = types
     },
     set(fieldName, value) {
       self[fieldName] = value;
+    },
+    toggle(fieldName) {
+      self[fieldName] = !self[fieldName];
     },
     RequestCode: flow(function*() {
       try {

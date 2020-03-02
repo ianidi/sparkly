@@ -1,8 +1,9 @@
-import { types } from "mobx-state-tree";
+import { types, applySnapshot } from "mobx-state-tree";
 
 export const MainStore = types
   .model("MainStore", {
-    onboadringComplete: false // Завершен ли онбординг (показывать ли его повторно)
+    onboadringComplete: false, // Завершен ли онбординг (показывать ли его повторно)
+    ChatNotificationsEnabled: true // Уведомления о новых сообщениях в чате включены
   })
   .actions(self => ({
     clear() {
@@ -11,5 +12,8 @@ export const MainStore = types
     },
     set(fieldName, value) {
       self[fieldName] = value;
+    },
+    toggle(fieldName) {
+      self[fieldName] = !self[fieldName];
     }
   }));

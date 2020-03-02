@@ -43,7 +43,7 @@ export default class FeedSettingsScreen extends React.Component {
   };
 
   complete = () => {
-    this.props.navigation.navigate("University");
+    this.props.navigation.goBack();
   };
 
   renderIntro = () => {
@@ -60,7 +60,7 @@ export default class FeedSettingsScreen extends React.Component {
               onValueChange={() => {
                 this.setState({ Notifications: !Notifications });
               }}
-              color={"#E6E6E6"}
+              color={"#525A71"}
               style
             />
           </SwitchWrapper>
@@ -183,35 +183,23 @@ const SwitchContainer = styled.View`
   flex-direction: row;
   width: ${width + `px`};
   align-items: center;
-  justify-content: space-between;
   padding-left: ${scale(18) + `px`};
   padding-right: ${scale(18) + `px`};
   margin-bottom: ${verticalScale(20) + `px`};
 `;
 
 const SwitchWrapper = styled.View`
-  width: ${scale(70) + `px`};
   height: ${verticalScale(40) + `px`};
-  align-items: center;
   justify-content: center;
   margin-right: ${scale(15) + `px`};
 `;
 
 const SwitchCaption = styled.Text`
-  width: ${width * 0.7 + `px`};
+  max-width: ${width * 0.7 + `px`};
   font-size: ${scale(16) + `px`};
   line-height: ${scale(20) + `px`};
-  font-family: "IBMPlexSans-Light";
-  color: #9499a7;
-`;
-
-const Description = styled.Text`
-  font-size: ${scale(16) + `px`};
-  line-height: ${scale(24) + `px`};
-  margin-top: ${verticalScale(10) + `px`};
-  margin-bottom: ${verticalScale(10) + `px`};
-  font-family: "IBMPlexSans-Light";
-  color: #252e48;
+  font-family: "IBMPlexMono";
+  color: #525a71;
 `;
 
 const CardContainer = styled.View`

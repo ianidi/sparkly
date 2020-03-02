@@ -95,6 +95,13 @@ def enableSeparateBuildPerCPUArchitecture = false
  */
 def enableProguardInReleaseBuilds = false
 
+//https://github.com/facebook/react-native/issues/26400
+configurations.all {
+     resolutionStrategy {
+       force "com.facebook.soloader:soloader:0.8.0"
+     }
+}
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -103,8 +110,8 @@ android {
         applicationId "com.sparkly"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 10
-        versionName "1.1.0"
+        versionCode 15
+        versionName "1.1.5"
     }
     splits {
         abi {
@@ -136,6 +143,9 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        exclude '**/libjscexecutor.so'
     }
 }
 

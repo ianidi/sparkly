@@ -2,7 +2,6 @@ import React, { createRef } from "react";
 import { inject, observer } from "mobx-react";
 import {
   ScrollView,
-  TouchableWithoutFeedback,
   TouchableOpacity,
   Dimensions,
   BackHandler
@@ -20,7 +19,7 @@ import CodeInput from "react-native-confirmation-code-field";
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class AuthSMSCodeScreen extends React.Component {
   constructor(props) {
@@ -53,7 +52,7 @@ export default class AuthSMSCodeScreen extends React.Component {
 
   arrowBackPress = () => {
     //Clear mobx phone
-    this.props.auth.set("Phone", "+7");
+    this.props.member.set("Phone", "+7");
     this.props.navigation.goBack();
   };
 
@@ -81,7 +80,7 @@ export default class AuthSMSCodeScreen extends React.Component {
   codeInput = createRef();
 
   handlerOnFulfill = Code => {
-    this.props.auth.Auth(Code);
+    this.props.member.Auth(Code);
 
     this.clearCode();
   };
@@ -103,6 +102,7 @@ export default class AuthSMSCodeScreen extends React.Component {
   }
 
   resendCode = () => {
+    this.props.member.RequestCode();
     this.startCountdown();
   };
 
@@ -110,24 +110,28 @@ export default class AuthSMSCodeScreen extends React.Component {
 
   renderTOS = () => {
     return (
-      <TouchableWithoutFeedback
+      <TouchableOpacity
+        activeOpacity={1}
         onPress={() => {
           WebBrowser.openBrowserAsync("https://sparkly.website/");
         }}
+        hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        style={{
+          marginTop: verticalScale(20)
+        }}
       >
         <TOS>
-          регистрируясь, вы принимаете условия{" "}
-          <TOSLink>пользовательского соглашения</TOSLink> и соглашаетесь на
-          обработку <TOSLink>персональных данных</TOSLink>
+          подтверждая номер, вы принимаете{" "}
+          <TOSLink>пользовательское соглашение</TOSLink>
         </TOS>
-      </TouchableWithoutFeedback>
+      </TouchableOpacity>
     );
   };
 
   cellProps = ({ /*index, isFocused,*/ hasValue }) => {
     styles = {
       borderBottomColor: "#9499A7",
-      borderBottomWidth: verticalScale(4),
+      borderBottomWidth: verticalScale(1),
       height: verticalScale(60),
       width: scale(40),
       fontSize: scale(32),
@@ -189,13 +193,13 @@ export default class AuthSMSCodeScreen extends React.Component {
           onFulfill={this.handlerOnFulfill}
         />
         <Code>
-          отправили код{"\n"}на номер {this.props.auth.PhoneMasked}
+          отправили код{"\n"}на номер {this.props.member.PhoneMasked}
         </Code>
         {countdown > 0 && (
-          <Code>
-            повторный код через {countdown}{" "}
-            {pluralize(countdown, "секунду", "секунды", "секунд")}
-          </Code>
+          <CodeResend>
+            повторный код через{"\n"}
+            {countdown} {pluralize(countdown, "секунду", "секунды", "секунд")}
+          </CodeResend>
         )}
         {countdown <= 0 && (
           <TouchableOpacity
@@ -203,7 +207,7 @@ export default class AuthSMSCodeScreen extends React.Component {
             activeOpacity={0.9}
             hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
-            <CodeResend>отправить код повторно</CodeResend>
+            <CodeResendLink>получить код повторно</CodeResendLink>
           </TouchableOpacity>
         )}
         {this.renderTOS()}
@@ -250,10 +254,9 @@ const Title = styled.Text`
 `;
 
 const TOS = styled.Text`
-  width: ${scale(220) + `px`};
+  width: ${scale(240) + `px`};
   font-size: ${scale(12) + `px`};
   line-height: ${scale(16) + `px`};
-  margin-top: ${verticalScale(60) + `px`};
   margin-bottom: ${verticalScale(10) + `px`};
   margin-left: ${scale(40) + `px`};
   font-family: "IBMPlexMono";
@@ -268,16 +271,26 @@ const TOSLink = styled.Text`
 `;
 
 const Code = styled.Text`
-  font-size: ${scale(16) + `px`};
-  line-height: ${scale(24) + `px`};
+  font-size: ${scale(12) + `px`};
+  line-height: ${scale(16) + `px`};
   margin-top: ${verticalScale(10) + `px`};
-  margin-bottom: ${verticalScale(20) + `px`};
+  margin-bottom: ${verticalScale(10) + `px`};
   margin-left: ${scale(40) + `px`};
-  font-family: "IBMPlexSans-Light";
-  color: #3b435a;
+  font-family: "IBMPlexMono";
+  color: #6e7588;
 `;
 
 const CodeResend = styled.Text`
+  font-size: ${scale(12) + `px`};
+  line-height: ${scale(16) + `px`};
+  margin-top: ${verticalScale(10) + `px`};
+  margin-bottom: ${verticalScale(20) + `px`};
+  margin-left: ${scale(40) + `px`};
+  font-family: "IBMPlexSans-Medium";
+  color: #3b435a;
+`;
+
+const CodeResendLink = styled.Text`
   font-size: ${scale(16) + `px`};
   line-height: ${scale(24) + `px`};
   margin-top: ${verticalScale(10) + `px`};

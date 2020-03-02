@@ -18,7 +18,7 @@ import { api } from "../../service/Api";
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class UniversityScreen extends React.Component {
   constructor(props) {
@@ -132,10 +132,10 @@ export default class UniversityScreen extends React.Component {
   };
 
   select = (UniversityID, UniversityTitle, UniversityAbbr) => {
-    this.props.auth.set("UniversityID", UniversityID);
-    this.props.auth.set("UniversityTitle", UniversityTitle);
-    this.props.auth.set("UniversityAbbr", UniversityAbbr);
-    this.props.auth.UniversitySelect();
+    this.props.member.set("UniversityID", UniversityID);
+    this.props.member.set("UniversityTitle", UniversityTitle);
+    this.props.member.set("UniversityAbbr", UniversityAbbr);
+    this.props.member.UniversitySelect();
   };
 
   inputBlur = () => {

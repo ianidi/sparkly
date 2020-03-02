@@ -14,19 +14,16 @@ import {
 import { Text } from "react-native-paper";
 import { CometChat } from "@cometchat-pro/react-native-chat";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import {
-  DocumentPicker,
-  DocumentPickerUtil
-} from "react-native-document-picker";
+//import {  DocumentPicker,  DocumentPickerUtil} from "react-native-document-picker";
 //import Video from "react-native-video";
 import ActionSheet from "react-native-actionsheet";
 import ImagePicker from "react-native-image-picker";
 let uid, messagelist, typingNotification, status, myUserID;
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
-export class ChatScreen extends React.Component {
+export default class ChatScreen extends React.Component {
   messagesRequest = null;
 
   constructor() {
@@ -40,6 +37,7 @@ export class ChatScreen extends React.Component {
       fullVideo: 0,
       fullVideoStream: ""
     };
+    this.cometchatLogin();
     this.getLoggedInUser();
     this.messagesRequest = new CometChat.MessagesRequestBuilder()
       .setUID(uid)
@@ -54,7 +52,7 @@ export class ChatScreen extends React.Component {
     this.sendMediaMessage = this.sendMediaMessage.bind(this);
     this.sendMsg = this.sendMsg.bind(this);
     this.imagePicker = this.imagePicker.bind(this);
-    this.documentPicker = this.documentPicker.bind(this);
+    //this.documentPicker = this.documentPicker.bind(this);
     this.showActionSheet = this.showActionSheet.bind(this);
     this.addUserListner();
     this.keyboardDidShowListener = Keyboard.addListener(
@@ -102,6 +100,50 @@ export class ChatScreen extends React.Component {
       headerTintColor: "#fff"
     };
   };
+
+  cometchatLogin() {
+    let appID = "12853aafe8ab275";
+    let appRegion = "eu";
+    var appSettings = new CometChat.AppSettingsBuilder()
+      .subscribePresenceForAllUsers()
+      .setRegion(appRegion)
+      .build();
+
+    CometChat.init(appID, appSettings).then(
+      () => {
+        CometChat.getLoggedinUser().then(user => {
+          console.log("get logged in user =>", user);
+          if (user !== null) {
+            this.props.navigation.navigate("Home");
+          }
+        });
+        console.log("Initialization completed successfully");
+      },
+      error => {
+        console.log("Initialization failed with error:", error);
+      }
+    );
+
+    console.log("vffvdf");
+    var authToken = "1_8fbfb58720afdcc38837bd30d1382201275152c2";
+    try {
+      CometChat.login(authToken).then(
+        User => {
+          // var userName = user.name;
+          // console.log("Login Successful:", { userName });
+
+          console.log("Login successfully:", { User });
+          // User loged in successfully.
+        },
+        error => {
+          console.log("Login failed with exception:", { error });
+          // User login failed, check error and take appropriate action.
+        }
+      );
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   getLoggedInUser() {
     CometChat.getLoggedinUser().then(
@@ -460,7 +502,7 @@ export class ChatScreen extends React.Component {
     };
     return MimeList[type];
   }
-
+  /*
   documentPicker() {
     DocumentPicker.show(
       {
@@ -482,7 +524,7 @@ export class ChatScreen extends React.Component {
         this.setState({ mediaMsg: file });
       }
     );
-  }
+  }*/
 
   imagePicker() {
     const options = {
@@ -580,15 +622,13 @@ export class ChatScreen extends React.Component {
           </TouchableOpacity>
         </View>
         <ActionSheet
-          title={"Choose File"}
+          title={"Выберите файл"}
           ref={o => (this.ActionSheet = o)}
-          options={["Image", "Document", "Cancel"]}
+          options={["Загрузить изображение", "Cancel"]}
           cancelButtonIndex={2}
           onPress={index => {
             if (index == 0) {
               this.imagePicker();
-            } else if (index == 1) {
-              this.documentPicker();
             }
           }}
         />

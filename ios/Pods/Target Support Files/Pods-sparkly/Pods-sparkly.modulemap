@@ -1,0 +1,6 @@
+module Pods_sparkly {
+  umbrella header "Pods-sparkly-umbrella.h"
+
+  export *
+  module * { export * }
+}

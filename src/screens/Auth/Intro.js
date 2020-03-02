@@ -14,7 +14,7 @@ import images from "../../constants/images";
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class IntroScreen extends React.Component {
   componentDidMount = () => {
@@ -51,14 +51,12 @@ export default class IntroScreen extends React.Component {
         >
           <ArrowBack source={images.AuthArrowBack} />
         </TouchableOpacity>
-        <Title>приятно познакомиться, {this.props.auth.Name}!</Title>
+        <Title>добро пожаловать, {this.props.member.Name}!</Title>
 
         <Description>
-          упс надо чето придумать соноропериод, так или иначе, интенсивен. ретро
-          синхронно использует форшлаг.попса образует микрохроматический
-          интервал. звукоряд, в том числе, заканчивает полиряд, таким образом
-          конструктивное состояние всей музыкальной ткани или выбери свой
-          универститет
+          sparkly поможет тебе найти твоего человека, просто хорошего друга,
+          любовь или напарника для рисования, утренних пробежек, совместных
+          походов в кино и многого другого...
         </Description>
         <TouchableOpacity
           onPress={this.complete}

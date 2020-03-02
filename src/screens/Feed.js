@@ -1,17 +1,32 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
 import {
+  Animated as RNAnimated,
+  Easing as RNEasing,
   Dimensions,
   View,
   StyleSheet,
   TouchableOpacity,
   BackHandler
 } from "react-native";
-import SafeAreaView from "react-native-safe-area-view";
-import { Feather as Icon } from "@expo/vector-icons";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
+import {
+  TapGestureHandler,
+  PanGestureHandler,
+  State
+} from "react-native-gesture-handler";
+import {
+  getStatusBarHeight,
+  getBottomSpace
+} from "react-native-iphone-x-helper";
 import Animated from "react-native-reanimated";
+import { withModal } from "react-native-modalfy";
+import styled from "styled-components/native";
+import { scale, verticalScale } from "react-native-size-matters";
+import { connectActionSheet } from "@expo/react-native-action-sheet";
+import LottieView from "lottie-react-native";
+import images from "../constants/images";
 import FeedCard from "../components/FeedCard";
+import FeedCircles from "../components/FeedCircles";
 
 function runSpring(clock, value, dest) {
   const state = {
@@ -74,9 +89,17 @@ const {
 
 @inject("feed")
 @observer
-export default class FeedScreen extends React.Component {
+class FeedScreen extends React.Component {
   constructor(props) {
     super(props);
+
+    this.state = {
+      likeAnimationProgress: new RNAnimated.Value(0),
+      likeAnimationVisible: false,
+      tempLike: false
+    };
+
+    doubleTapRef = React.createRef();
 
     this.translationX = new Value(0);
     this.translationY = new Value(0);
@@ -183,7 +206,41 @@ export default class FeedScreen extends React.Component {
     this.init();
   };
 
+  like = () => {
+    this.playLikeAnimation();
+  };
+
+  likeByDoubleTap = event => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      this.like();
+    }
+  };
+
+  playLikeAnimation = () => {
+    this.setState({ tempLike: true });
+    if (this.state.likeAnimationVisible) {
+      return;
+    }
+
+    this.setState(s => ({
+      ...s,
+      likeAnimationProgress: new RNAnimated.Value(0),
+      likeAnimationVisible: true
+    }));
+
+    RNAnimated.timing(this.state.likeAnimationProgress, {
+      toValue: 1,
+      duration: 2000,
+      easing: RNEasing.linear
+    }).start(() => this.setState(s => ({ ...s, likeAnimationVisible: false })));
+  };
+
   componentDidMount = () => {
+    //this.props.modal.openModal("FeedOnboarding");
+
+    //Set FeedSettings closed
+    this.props.feed.set("FeedSettingsOpen", false);
+
     this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
       return true;
     });
@@ -195,6 +252,29 @@ export default class FeedScreen extends React.Component {
 
   closePress = () => {
     this.props.navigation.goBack();
+  };
+
+  openFeedSettings = () => {
+    this.props.feed.set("FeedSettingsOpen", true);
+    this.props.modal.openModal("FeedSettings");
+  };
+
+  report = () => {
+    // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
+    const options = ["Пожаловаться на контент", "Отмена"];
+    const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 2;
+
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex
+      },
+      buttonIndex => {
+        // Do something here depending on the button index selected
+      }
+    );
   };
 
   render() {
@@ -220,60 +300,180 @@ export default class FeedScreen extends React.Component {
       zIndex: 900,
       transform: [{ translateX }, { translateY }, { rotateZ }]
     };
-
+    //, backgroundColor: "#fff"
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-        <View style={styles.cards}>
-          <FeedCard {...{ swipeLeft, swipeRight }} />
-          <PanGestureHandler
-            onHandlerStateChange={onGestureEvent}
-            {...{ onGestureEvent }}
-          >
-            <Animated.View {...{ style }}>
-              <FeedCard />
-            </Animated.View>
-          </PanGestureHandler>
-        </View>
-        <View style={styles.footer}>
-          <View />
+      <View
+        style={{
+          flex: 1
+        }}
+      >
+        <CloseContainer>
           <TouchableOpacity
             onPress={this.closePress}
             activeOpacity={0.9}
             hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
-            <Icon name="x" size={40} color="#fff" />
+            <CloseImage source={images.Close} />
           </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+        </CloseContainer>
+
+        {this.state.likeAnimationVisible && (
+          <View
+            style={{
+              position: "absolute",
+              zIndex: 10000,
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+            pointerEvents={"none"}
+          >
+            <LottieView
+              source={images.LottieLike}
+              autoPlay
+              style={{
+                width: width * 0.7
+              }}
+              progress={this.state.likeAnimationProgress}
+            />
+          </View>
+        )}
+
+        <TouchableOpacity
+          onPress={() => this.like()}
+          activeOpacity={0.9}
+          style={{
+            position: "absolute",
+            zIndex: 9999,
+            bottom: getBottomSpace() + verticalScale(140),
+            right: scale(29)
+          }}
+        >
+          <LikeContainer
+            style={{
+              backgroundColor: this.state.tempLike ? "#f5cfd0" : "#fff"
+            }}
+          >
+            <LikeImage source={images.Like} />
+          </LikeContainer>
+        </TouchableOpacity>
+
+        {this.props.feed.FeedSettingsOpen == false && (
+          <TouchableOpacity
+            onPress={() => this.openFeedSettings()}
+            activeOpacity={0.9}
+            hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            style={{
+              position: "absolute",
+              zIndex: 9999,
+              bottom: getBottomSpace() + verticalScale(40),
+              alignSelf: "center"
+            }}
+          >
+            <FilterContainer>
+              <FeedCircles />
+            </FilterContainer>
+          </TouchableOpacity>
+        )}
+
+        <ReportContainer>
+          <TouchableOpacity
+            onPress={this.report}
+            activeOpacity={0.9}
+            hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
+            <FeedReportImage source={images.ReportDots} />
+          </TouchableOpacity>
+        </ReportContainer>
+
+        <TapGestureHandler
+          onHandlerStateChange={this.likeByDoubleTap}
+          numberOfTaps={2}
+        >
+          <View
+            style={{
+              flex: 1,
+              zIndex: 100
+            }}
+          >
+            <FeedCard {...{ swipeLeft, swipeRight }} />
+            <PanGestureHandler
+              onHandlerStateChange={onGestureEvent}
+              {...{ onGestureEvent }}
+            >
+              <Animated.View {...{ style }}>
+                <FeedCard />
+              </Animated.View>
+            </PanGestureHandler>
+          </View>
+        </TapGestureHandler>
+      </View>
     );
   }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fbfaff"
-  },
-  header: {
-    position: "absolute",
-    top: 0,
-    width: width,
-    zIndex: 1000,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 16
-  },
-  cards: {
-    flex: 1,
-    zIndex: 100
-  },
-  footer: {
-    position: "absolute",
-    top: 0,
-    width: width,
-    zIndex: 1000,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    padding: 16
-  }
-});
+export default withModal(connectActionSheet(FeedScreen));
+
+const ReportContainer = styled.View`
+  position: absolute;
+  z-index: 2000;
+  width: ${width - scale(40) + `px`};
+  bottom: ${getBottomSpace() + verticalScale(40) + scale(11) + `px`};
+  margin-left: ${scale(20) + `px`};
+  margin-right: ${scale(20) + `px`};
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+`;
+
+const FeedReportImage = styled.Image`
+  width: ${scale(24) + `px`};
+  height: ${scale(24) + `px`};
+`;
+
+const CloseContainer = styled.View`
+  position: absolute;
+  z-index: 2000;
+  top: ${getStatusBarHeight() + verticalScale(20) + `px`};
+  right: ${scale(20) + `px`};
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+const CloseImage = styled.Image`
+  width: ${scale(24) + `px`};
+  height: ${scale(24) + `px`};
+`;
+
+const FilterContainer = styled.View`
+  padding-top: ${scale(8) + `px`};
+  padding-bottom: ${scale(8) + `px`};
+  padding-left: ${scale(8) + `px`};
+  padding-right: ${scale(8) + `px`};
+  border-radius: 10px;
+  background: #fff;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const LikeContainer = styled.View`
+  padding-top: ${scale(8) + `px`};
+  padding-bottom: ${scale(8) + `px`};
+  padding-left: ${scale(8) + `px`};
+  padding-right: ${scale(8) + `px`};
+  border: ${scale(2) + `px solid #bc7071`};
+  border-radius: 10px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LikeImage = styled.Image`
+  width: ${scale(30) + `px`};
+  height: ${scale(30) + `px`};
+`;

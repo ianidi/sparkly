@@ -1,20 +1,32 @@
 import { types, flow, onSnapshot, applySnapshot } from "mobx-state-tree";
 import { api } from "../service/Api";
-import * as NavigationService from "../service/NavigationService";
+import * as NavigationService from "../service/Navigation";
 import { message } from "../service/Message";
 
 const FeedModel = types.model({
   FeedID: types.identifierNumber,
   URL: types.string,
   Video: false,
-  Viewed: false
-  // Thumbnail: types.maybeNull(types.string),
+  Viewed: false,
+  Date: types.maybeNull(types.string), //types.Date
+  MatchCount: types.maybeNull(types.number),
+  //Thumbnail: types.maybeNull(types.string),
+  MemberName: types.maybeNull(types.string),
+  MemberUniversityAbbr: types.maybeNull(types.string),
+  MemberAvatarURL: types.maybeNull(types.string)
+  //Ищу соседа
 });
 
 export const FeedStore = types
   .model("FeedStore", {
+    FeedSettingsOpen: false, // В данный момент на экране ленты открыты настройки параметров ленты
+    RestrictUniversity: false, // Выдавать в ленте студентов только из моего университета
+    Gender: types.optional(types.string, "any"), // Выдавать в ленте анкеты только определенного пола (m/f/any)
     Feed: types.array(FeedModel),
-    FeedIndex: types.optional(types.number, 0)
+    FeedIndex: types.optional(types.number, 0),
+    MyFeedURL: types.maybeNull(types.string),
+    MyFeedVideo: false,
+    MyFeedDate: types.maybeNull(types.string) //types.Date
   })
   .views(self => ({
     get IndexPrevious() {
@@ -54,6 +66,9 @@ export const FeedStore = types
     },
     set(fieldName, value) {
       self[fieldName] = value;
+    },
+    toggle(fieldName) {
+      self[fieldName] = !self[fieldName];
     },
     swipe(direction) {
       if (direction == "left") {

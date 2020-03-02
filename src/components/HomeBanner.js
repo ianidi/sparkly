@@ -1,6 +1,5 @@
 import React from "react";
 import { Text, TouchableWithoutFeedback, Dimensions } from "react-native";
-import * as NavigationService from "../service/NavigationService";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import Carousel, { Pagination } from "react-native-snap-carousel";

@@ -15,7 +15,7 @@ import images from "../../constants/images";
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class NameGenderScreen extends React.Component {
   constructor(props) {
@@ -37,12 +37,12 @@ export default class NameGenderScreen extends React.Component {
   }
 
   onChangeNameInput = Name => {
-    this.props.auth.set("Name", Name);
+    this.props.member.set("Name", Name);
   };
 
   continue = Gender => {
-    this.props.auth.set("Gender", Gender);
-    this.props.auth.NameGender();
+    this.props.member.set("Gender", Gender);
+    this.props.member.NameGender();
   };
 
   inputBlur = () => {
@@ -56,15 +56,15 @@ export default class NameGenderScreen extends React.Component {
     let showButton = false;
 
     if (
-      typeof this.props.auth.Name != "undefined" &&
-      this.props.auth.Name.length > 2
+      typeof this.props.member.Name != "undefined" &&
+      this.props.member.Name.length > 2
     ) {
       showButton = true;
     }
 
     return (
       <>
-        <Title>привет! как{"\n"}тебя зовут?</Title>
+        <Title>привет, напиши{"\n"}свое имя</Title>
 
         <TextInput
           refInput={ref => {
@@ -76,7 +76,7 @@ export default class NameGenderScreen extends React.Component {
             color: "#252E48",
             marginLeft: scale(40)
           }}
-          value={this.props.auth.Name}
+          value={this.props.member.Name}
           onChangeText={Name => {
             this.onChangeNameInput(Name);
           }}
@@ -135,8 +135,8 @@ export default class NameGenderScreen extends React.Component {
     let showButton = false;
 
     if (
-      typeof this.props.auth.Name != "undefined" &&
-      this.props.auth.Name.length > 2
+      typeof this.props.member.Name != "undefined" &&
+      this.props.member.Name.length > 2
     ) {
       showButton = true;
     }

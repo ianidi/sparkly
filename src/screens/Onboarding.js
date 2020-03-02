@@ -7,7 +7,7 @@ import Screen2 from "../components/Onboarding/Screen2";
 import Screen3 from "../components/Onboarding/Screen3";
 
 @inject("main")
-@inject("auth")
+@inject("member")
 @observer
 export default class OnboardingScreen extends React.PureComponent {
   complete = () => {
@@ -17,7 +17,7 @@ export default class OnboardingScreen extends React.PureComponent {
 
   render() {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
         <Onboarding
           scenes={scenes}
           enableBackgroundColorTransition={true}

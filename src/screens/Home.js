@@ -10,19 +10,22 @@ import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../constants/images";
+import FeedCircles from "../components/FeedCircles";
+import Avatar from "../components/Avatar";
 
 const { width, height } = Dimensions.get("screen");
 
 @inject("main")
 @inject("feed")
-@inject("auth")
+@inject("member")
 @observer
 export default class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      Notifications: false
+      Notifications: false,
+      popupCamera: false
     };
   }
 
@@ -37,6 +40,14 @@ export default class HomeScreen extends React.Component {
     this.props.feed.init();
   };
 
+  popupCameraOpen = () => {
+    this.setState({ popupCamera: true });
+  };
+
+  popupCameraClose = () => {
+    this.setState({ popupCamera: false });
+  };
+
   componentWillUnmount() {
     this.backHandler.remove();
   }
@@ -45,19 +56,30 @@ export default class HomeScreen extends React.Component {
     this.props.navigation.goBack();
   };
 
+  navigateCamera = () => {
+    if (this.state.popupCamera) {
+      this.popupCameraClose();
+      return;
+    }
+    this.props.navigation.navigate("Camera");
+  };
+
   renderHome = () => {
     return (
       <>
         <TopContainer>
-          <TopStartContainer>
-            <UserCircle>
-              <UserImage source={images.User} />
-            </UserCircle>
-            <TitleContainer>
-              <Title>{this.props.auth.Name}</Title>
-              <Caption>{this.props.auth.UniversityAbbr}</Caption>
-            </TitleContainer>
-          </TopStartContainer>
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("Profile")}
+            activeOpacity={0.9}
+          >
+            <TopStartContainer>
+              <Avatar />
+              <TitleContainer>
+                <Title>{this.props.member.Name}</Title>
+                <Caption>{this.props.member.UniversityAbbr}</Caption>
+              </TitleContainer>
+            </TopStartContainer>
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => this.props.navigation.navigate("Settings")}
             activeOpacity={0.9}
@@ -81,17 +103,82 @@ export default class HomeScreen extends React.Component {
         <Delimiter />
 
         <CardContainer>
-          <CardMy>
-            <CardMyImage source={images.My} />
-            <CardMyText>моя анкета</CardMyText>
-          </CardMy>
+          {this.props.member.LastFeedLocalURI != null ? (
+            <CardMy>
+              <CardCircles>
+                <CardCircle
+                  style={{
+                    backgroundColor: this.props.member
+                      .LastFeedRestrictUniversity
+                      ? "#525A71"
+                      : "#fff",
+                    borderWidth: scale(1),
+                    borderColor: this.props.member.LastFeedRestrictUniversity
+                      ? "#525A71"
+                      : "#D9D9D9"
+                  }}
+                />
+              </CardCircles>
+              <CardMyImage
+                source={{ uri: this.props.member.LastFeedLocalURI }}
+              />
+              <CardMyText>моя анкета{"\n"}10м.</CardMyText>
+            </CardMy>
+          ) : (
+            <TouchableOpacity onPress={this.navigateCamera} activeOpacity={0.9}>
+              <CardMy
+                style={{
+                  borderWidth: scale(1),
+                  borderColor: "#ebebeb"
+                }}
+              >
+                <CardCircles>
+                  <CardCircle
+                    style={{
+                      backgroundColor: "#E6E6E6"
+                    }}
+                  />
+                </CardCircles>
+                <CardMyText style={{ color: "#3B435A" }}>
+                  здесь будет ваша анкета, сделайте фото
+                </CardMyText>
+              </CardMy>
+            </TouchableOpacity>
+          )}
+
           <CardSmallContainer>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("Camera")}
-              activeOpacity={0.9}
-            >
+            <TouchableOpacity onPress={this.navigateCamera} activeOpacity={0.9}>
               <CardSmall>
-                <CameraImage source={images.Camera} />
+                <CardImages>
+                  <CameraImage source={images.Camera} />
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={this.popupCameraOpen}
+                  >
+                    <CardInfo source={images.Info} />
+                  </TouchableOpacity>
+                  {this.state.popupCamera && (
+                    <PopupContainer>
+                      <TouchableOpacity
+                        activeOpacity={0.9}
+                        style={{
+                          position: "absolute",
+                          top: scale(10),
+                          right: scale(10),
+                          zIndex: 1000
+                        }}
+                        onPress={this.popupCameraClose}
+                        hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                      >
+                        <PopupClose source={images.PopupClose} />
+                      </TouchableOpacity>
+                      <PopupText>
+                        Здесь вы можете загрузить свою фотографию в ленту, чтобы
+                        затем найти новых друзей для общения
+                      </PopupText>
+                    </PopupContainer>
+                  )}
+                </CardImages>
                 <CardSmallText>отснять{"\n"}новое фото</CardSmallText>
               </CardSmall>
             </TouchableOpacity>
@@ -111,15 +198,15 @@ export default class HomeScreen extends React.Component {
           onPress={this.feedInit}
           activeOpacity={0.9}
           hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          style={{
+            marginTop: verticalScale(50),
+            marginBottom: verticalScale(20)
+          }}
         >
           <ButtonContainer>
             <Button>
-              <ButtonCircle
-                style={{
-                  backgroundColor: "#F5CFD0"
-                }}
-              />
-              <ButtonText>смотреть ленту</ButtonText>
+              <FeedCircles />
+              <ButtonText>смотреть анкеты</ButtonText>
             </Button>
           </ButtonContainer>
         </TouchableOpacity>
@@ -144,29 +231,48 @@ export default class HomeScreen extends React.Component {
   }
 }
 
+const PopupContainer = styled.View`
+  position: absolute;
+  right: 0;
+  z-index: 3000;
+  max-width: ${width * 0.84 + `px`};
+  top: ${scale(30) + `px`};
+  padding-top: ${verticalScale(15) + `px`};
+  padding-bottom: ${verticalScale(15) + `px`};
+  padding-left: ${scale(15) + `px`};
+  padding-right: ${scale(27) + `px`};
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.2);
+  elevation: 2;
+  border-radius: 10px;
+  background: #f2f2f2;
+  border: 1px solid #9499a7;
+`;
+
+const PopupText = styled.Text`
+  flex: 1;
+  flex-wrap: wrap;
+  font-size: ${scale(12) + `px`};
+  line-height: ${scale(16) + `px`};
+  font-family: "IBMPlexMono";
+  color: #3b435a;
+`;
+
+const PopupClose = styled.Image`
+  width: ${scale(15) + `px`};
+  height: ${scale(15) + `px`};
+`;
+
 const TopContainer = styled.View`
-  margin-top: ${verticalScale(20) + `px`};
+  margin-top: ${verticalScale(10) + `px`};
   margin-bottom: ${verticalScale(16) + `px`};
   margin-left: ${scale(20) + `px`};
   margin-right: ${scale(20) + `px`};
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-`;
-
-const UserCircle = styled.View`
-  width: ${scale(40) + `px`};
-  height: ${scale(40) + `px`};
-  margin-right: ${scale(10) + `px`};
-  border-radius: 50px;
-  background: #f0f0f0;
-  align-items: center;
-  justify-content: center;
-`;
-
-const UserImage = styled.Image`
-  width: ${scale(24) + `px`};
-  height: ${scale(24) + `px`};
 `;
 
 const TopStartContainer = styled.View`
@@ -176,6 +282,7 @@ const TopStartContainer = styled.View`
 
 const TitleContainer = styled.View`
   justify-content: center;
+  margin-left: ${scale(10) + `px`};
 `;
 
 const Title = styled.Text`
@@ -235,6 +342,18 @@ const Delimiter = styled.View`
   background: #f2f2f2;
 `;
 
+const CardCircles = styled.View`
+  flex-direction: row;
+  align-items: center;
+  z-index: 1000;
+`;
+
+const CardCircle = styled.View`
+  width: ${scale(30) + `px`};
+  height: ${scale(30) + `px`};
+  border-radius: 100px;
+`;
+
 const CardContainer = styled.View`
   margin-left: ${scale(15) + `px`};
   margin-right: ${scale(15) + `px`};
@@ -248,11 +367,11 @@ const CardMy = styled.View`
   height: ${verticalScale(300) + `px`};
   padding-top: ${scale(15) + `px`};
   padding-left: ${scale(15) + `px`};
-  padding-right: ${scale(15) + `px`};
+  padding-right: ${scale(10) + `px`};
   padding-bottom: ${scale(25) + `px`};
   border-radius: 10px;
   background: #fafafa;
-  justify-content: flex-end;
+  justify-content: space-between;
   overflow: hidden;
 `;
 
@@ -280,24 +399,36 @@ const CardSmallContainer = styled.View`
 const CardSmall = styled.View`
   width: ${(width - scale(39)) / 2 + `px`};
   height: ${verticalScale(145) + `px`};
-  padding-top: ${scale(20) + `px`};
+  padding-top: ${scale(15) + `px`};
   padding-left: ${scale(15) + `px`};
   padding-right: ${scale(20) + `px`};
   padding-bottom: ${scale(25) + `px`};
   border-radius: 10px;
   background: #fafafa;
-  border: 1px solid #ebebeb;
+  border: ${scale(1) + `px solid #ebebeb`};
   justify-content: space-between;
 `;
 
+const CardImages = styled.View`
+  z-index: 5000;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const CardInfo = styled.Image`
+  width: ${scale(24) + `px`};
+  height: ${scale(24) + `px`};
+`;
+
 const CameraImage = styled.Image`
-  width: ${scale(25) + `px`};
-  height: ${scale(17) + `px`};
+  width: ${scale(30) + `px`};
+  height: ${scale(30) + `px`};
 `;
 
 const MessageImage = styled.Image`
-  width: ${scale(22) + `px`};
-  height: ${scale(18) + `px`};
+  width: ${scale(30) + `px`};
+  height: ${scale(30) + `px`};
 `;
 
 const CardSmallText = styled.Text`
@@ -315,12 +446,10 @@ const ButtonContainer = styled.View`
 
 //align-self: center;
 const Button = styled.View`
-  margin-top: ${verticalScale(50) + `px`};
-  margin-bottom: ${verticalScale(20) + `px`};
-  padding-top: ${verticalScale(8) + `px`};
-  padding-bottom: ${verticalScale(8) + `px`};
-  padding-left: ${verticalScale(12) + `px`};
-  padding-right: ${verticalScale(12) + `px`};
+  padding-top: ${scale(8) + `px`};
+  padding-bottom: ${scale(8) + `px`};
+  padding-left: ${scale(8) + `px`};
+  padding-right: ${scale(12) + `px`};
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -330,6 +459,7 @@ const Button = styled.View`
 `;
 
 const ButtonText = styled.Text`
+  margin-left: ${scale(4) + `px`};
   font-size: ${scale(16) + `px`};
   line-height: ${scale(16) + `px`};
   font-family: "IBMPlexMono";
@@ -342,3 +472,20 @@ const ButtonCircle = styled.View`
   margin-right: ${scale(6) + `px`};
   border-radius: 100px;
 `;
+
+/*
+            <CardCircles>
+              <CardCircle
+                style={{
+                  backgroundColor: "#70C874",
+                  zIndex: 500
+                }}
+              />
+              <CardCircle
+                style={{
+                  backgroundColor: "#525A71",
+                  marginLeft: scale(-15)
+                }}
+              />
+            </CardCircles>
+             */

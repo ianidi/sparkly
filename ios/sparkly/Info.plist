@@ -40,7 +40,7 @@
 	<key>NSCalendarsUsageDescription</key>
 	<string>Allow sparkly to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Sparkly needs to use the camera. It will allow you to upload your photos to sparkly feed and meet new people who liked your photos.</string>
+	<string>sparkly нужно использовать камеру. Это позволит вам загружать свои фотографии в ленту sparkly и знакомиться с новыми людьми, которым понравились ваши фотографии.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Allow sparkly experiences to access your contacts</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -50,13 +50,13 @@
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Allow sparkly to use your location</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Sparkly needs to use the microphone. You will be able to record videos with sound.</string>
+	<string>sparkly нужно использовать микрофон. Вы сможете записывать видео со звуком.</string>
 	<key>NSMotionUsageDescription</key>
 	<string>Allow sparkly to access your device's accelerometer</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Give sparkly periences permission to save photos</string>
+	<string>Предоставьте sparkly разрешение на доступ к вашим фотографиям, чтобы сохранять то, что вы отсняли</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Give sparkly periences permission to access your photos</string>
+	<string>Предоставьте sparkly разрешение на доступ к вашим фотографиям и вы сможете загружать свои фото в ленту</string>
 	<key>NSRemindersUsageDescription</key>
 	<string>Allow sparkly to access your reminders</string>
 	<key>UIAppFonts</key>
@@ -77,11 +77,11 @@
 	<array>
 		<string>armv7</string>
 	</array>
+	<key>UIStatusBarHidden</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>

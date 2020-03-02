@@ -351,7 +351,6 @@ export default class OnboardingAnimate extends React.Component {
                 Styles.btnPositive,
                 {
                   width: windowWidth - scale(32),
-                  height: verticalScale(90),
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center"

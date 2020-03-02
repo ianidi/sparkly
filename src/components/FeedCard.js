@@ -1,10 +1,16 @@
 import * as React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, StyleSheet, View, Dimensions } from "react-native";
 import { inject, observer } from "mobx-react";
+import styled from "styled-components/native";
 import { Video } from "expo-av";
 //import Video from "react-native-video";
+import { scale, verticalScale } from "react-native-size-matters";
 import Animated from "react-native-reanimated";
 import { BASE_URL } from "../constants";
+import images from "../constants/images";
+import FeedCardTop from "./FeedCardTop";
+
+const { width, height } = Dimensions.get("window");
 
 @inject("feed")
 @observer
@@ -22,6 +28,7 @@ export default class FeedCard extends React.Component {
         <Animated.View
           style={[StyleSheet.absoluteFill, { opacity: swipeLeft }]}
         >
+          <FeedCardTop />
           {!this.props.feed.FeedPrevious.Video ? (
             <Image
               source={{
@@ -39,9 +46,11 @@ export default class FeedCard extends React.Component {
             />
           )}
         </Animated.View>
+
         <Animated.View
           style={[StyleSheet.absoluteFill, { opacity: swipeRight }]}
         >
+          <FeedCardTop />
           {!this.props.feed.FeedNext.Video ? (
             <Image
               source={{
@@ -58,32 +67,37 @@ export default class FeedCard extends React.Component {
             />
           )}
         </Animated.View>
-        {!this.props.feed.FeedCurrent.Video &&
-          swipeLeft == 0 &&
-          swipeRight == 0 && (
-            <Image
-              source={{
-                uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
-              }}
-              style={styles.image}
-            />
-          )}
-        {this.props.feed.FeedCurrent.Video &&
-          swipeLeft == 0 &&
-          swipeRight == 0 && (
-            <Video
-              source={{
-                uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
-              }}
-              rate={1.0}
-              volume={1.0}
-              isMuted={false}
-              resizeMode="cover"
-              shouldPlay
-              isLooping
-              style={styles.video}
-            />
-          )}
+
+        <Animated.View style={[StyleSheet.absoluteFill]}>
+          <FeedCardTop />
+
+          {!this.props.feed.FeedCurrent.Video &&
+            swipeLeft == 0 &&
+            swipeRight == 0 && (
+              <Image
+                source={{
+                  uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
+                }}
+                style={styles.image}
+              />
+            )}
+          {this.props.feed.FeedCurrent.Video &&
+            swipeLeft == 0 &&
+            swipeRight == 0 && (
+              <Video
+                source={{
+                  uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
+                }}
+                rate={1.0}
+                volume={1.0}
+                isMuted={false}
+                resizeMode="cover"
+                shouldPlay
+                isLooping
+                style={styles.video}
+              />
+            )}
+        </Animated.View>
       </View>
     );
   }

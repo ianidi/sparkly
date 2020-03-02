@@ -33,11 +33,13 @@ export default class FirstScene extends Component {
     return (
       <Container>
         <Image source={images.Onboarding_2} resizeMode={"contain"} />
-        <Title>быть в курсе событий</Title>
-        <Animated.Text style={subtitleAnimateStyle}>
-          вместе пойти на премьеру фильма, найти напарника для бега и многое
-          другое в ленте приложения
-        </Animated.Text>
+        <Content>
+          <Title>быть в курсе событий</Title>
+          <Animated.Text style={subtitleAnimateStyle}>
+            вместе пойти на премьеру фильма, найти напарника для бега и многое
+            другое в ленте приложения
+          </Animated.Text>
+        </Content>
       </Container>
     );
   }
@@ -46,18 +48,22 @@ export default class FirstScene extends Component {
 const Container = styled.View`
   flex: 1;
   align-items: center;
-  width: ${width - 80 + `px`};
+  width: ${width + `px`};
   margin-top: ${verticalScale(20) + `px`};
-  margin-left: 40px;
-  margin-right: 40px;
+`;
+
+const Content = styled.View`
+  width: ${width - scale(80) + `px`};
+  margin-left: ${scale(40) + `px`};
+  margin-right: ${scale(40) + `px`};
 `;
 
 const Image = styled.Image`
-  width: ${width - 36 + `px`};
-  height: ${(width - 36) * 0.65 + `px`};
+  width: ${width - scale(36) + `px`};
+  height: ${(width - scale(36)) * 0.65 + `px`};
   margin-bottom: ${verticalScale(24) + `px`};
-  margin-left: 18px;
-  margin-right: 18px;
+  margin-left: ${scale(18) + `px`};
+  margin-right: ${scale(18) + `px`};
 `;
 
 const Title = styled.Text`
@@ -73,6 +79,6 @@ const styles = StyleSheet.create({
     fontSize: scale(16),
     lineHeight: scale(22),
     fontFamily: "IBMPlexSans-Light",
-    color: "#525a71"
+    color: "#252E48"
   }
 });
