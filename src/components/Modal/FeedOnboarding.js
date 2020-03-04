@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../../constants/images";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 export default class FeedOnboardingModal extends React.PureComponent {
   navigate = screen => {

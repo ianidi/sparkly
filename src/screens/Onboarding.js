@@ -11,7 +11,7 @@ import Screen3 from "../components/Onboarding/Screen3";
 @observer
 export default class OnboardingScreen extends React.PureComponent {
   complete = () => {
-    this.props.main.set("onboadringComplete", true);
+    this.props.main.set("OnboadringComplete", true);
     this.props.navigation.navigate("Auth");
   };
 

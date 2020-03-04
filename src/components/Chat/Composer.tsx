@@ -12,7 +12,7 @@ import { MIN_COMPOSER_HEIGHT, DEFAULT_PLACEHOLDER } from "./Constant";
 import Color from "./Color";
 import { scale, verticalScale } from "react-native-size-matters";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {

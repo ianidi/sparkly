@@ -14,7 +14,7 @@ import images from "../constants/images";
 import ChatDialog from "../components/ChatDialog";
 import NewMatch from "../components/NewMatch";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")

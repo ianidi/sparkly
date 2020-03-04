@@ -7,6 +7,8 @@ import {
   BackHandler
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
+import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import * as Progress from "react-native-progress";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../../constants/images";
@@ -16,7 +18,7 @@ const timer = require("react-native-timer");
 
 import CodeInput from "react-native-confirmation-code-field";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")
@@ -26,7 +28,7 @@ export default class AuthSMSCodeScreen extends React.Component {
     super(props);
 
     this.state = {
-      countdown: 10
+      countdown: 60
     };
   }
 
@@ -79,10 +81,12 @@ export default class AuthSMSCodeScreen extends React.Component {
   /* SMS Code */
   codeInput = createRef();
 
-  handlerOnFulfill = Code => {
-    this.props.member.Auth(Code);
+  handlerOnFulfill = async Code => {
+    let result = await this.props.member.Auth(Code);
 
-    this.clearCode();
+    if (result === false) {
+      this.clearCode();
+    }
   };
 
   clearCode() {
@@ -226,6 +230,19 @@ export default class AuthSMSCodeScreen extends React.Component {
             paddingRight: scale(16)
           }}
         >
+          {this.props.member.loading && (
+            <Progress.Circle
+              size={30}
+              indeterminate={true}
+              color="#525A71"
+              borderWidth={2}
+              style={{
+                position: "absolute",
+                top: getStatusBarHeight() + verticalScale(10),
+                right: scale(20)
+              }}
+            />
+          )}
           <ScrollView
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps={"handled"}

@@ -3,11 +3,11 @@ import { inject, observer } from "mobx-react";
 import { TouchableOpacity, Dimensions, BackHandler } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
-import { Switch } from "react-native-paper";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../constants/images";
+import Switch from "../components/Switch";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @observer
@@ -17,19 +17,21 @@ class Notifications extends React.Component {
       <NotificationsContainer>
         <NotificationsSwitch>
           <Switch
+            ref={ref => {
+              this.switch = ref;
+            }}
+            colorActive="rgb(253, 227, 0)"
             value={this.props.main.ChatNotificationsEnabled}
-            onValueChange={() =>
-              this.props.main.toggle("ChatNotificationsEnabled")
-            }
-            color={"#FDE300"}
+            onChange={value => {
+              this.props.main.set("ChatNotificationsEnabled", value);
+            }}
           />
         </NotificationsSwitch>
 
         <NotificationsContent>
           <TouchableOpacity
-            onPress={() => this.props.main.toggle("ChatNotificationsEnabled")}
+            onPress={() => this.switch.toggle()}
             activeOpacity={0.9}
-            hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
             <NotificationsTitle>
               получать уведомления о новых сообщениях в чате
@@ -99,11 +101,7 @@ export default class SettingsScreen extends React.Component {
 
         <Notifications />
 
-        <TouchableOpacity
-          onPress={this.signOut}
-          activeOpacity={0.9}
-          hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
-        >
+        <TouchableOpacity onPress={this.signOut} activeOpacity={0.9}>
           <ButtonProfile>
             <ButtonProfileText>выйти из аккаунта</ButtonProfileText>
           </ButtonProfile>
@@ -180,10 +178,10 @@ const NotificationsContainer = styled.View`
   margin-right: ${scale(35) + `px`};
   width: ${width - scale(35) + `px`};
   flex-direction: row;
+  align-items: center;
 `;
 
 const NotificationsSwitch = styled.View`
-  padding-top: ${verticalScale(4) + `px`};
   margin-right: ${scale(15) + `px`};
 `;
 
@@ -195,7 +193,6 @@ const NotificationsContent = styled.View`
 const NotificationsTitle = styled.Text`
   font-size: ${scale(16) + `px`};
   line-height: ${scale(20) + `px`};
-  margin-bottom: ${verticalScale(5) + `px`};
   font-family: "IBMPlexMono";
   color: #525a71;
 `;

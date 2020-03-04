@@ -1,57 +1,87 @@
 import * as React from "react";
+import { inject, observer } from "mobx-react";
 import { Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import { getStatusBarHeight } from "react-native-iphone-x-helper";
 import { SingleImage } from "./Lightbox";
 import images from "../constants/images";
+import Avatar from "./Avatar";
 
 const { width, height } = Dimensions.get("window");
 
+@inject("member")
+@observer
 export default class FeedCardTop extends React.Component {
   render() {
     return (
       <TopContainer>
         <TopStartContainer>
-          <AvatarContainer
-            style={{
-              zIndex: 5
-            }}
-          >
-            <SingleImage
-              uri="http://213.226.125.134:4000/static/Avatar_temp.png"
+          {this.props.my ? (
+            <Avatar />
+          ) : (
+            <AvatarContainer
               style={{
-                width: scale(40),
-                height: scale(40)
+                zIndex: 5
+              }}
+            >
+              <SingleImage
+                uri="http://213.226.125.134:4000/static/Avatar_temp.png"
+                style={{
+                  width: scale(40),
+                  height: scale(40)
+                }}
+              />
+            </AvatarContainer>
+          )}
+
+          {this.props.my ? (
+            <Circle
+              style={{
+                backgroundColor: this.props.member.LastFeedRestrictUniversity
+                  ? "#525A71"
+                  : "#fff",
+                borderWidth: scale(1),
+                borderColor: this.props.member.LastFeedRestrictUniversity
+                  ? "#525A71"
+                  : "#D9D9D9"
               }}
             />
-          </AvatarContainer>
-
-          {true && (
-            <MatchContainer
-              style={{
-                backgroundColor: "#984446",
-                zIndex: 10
-              }}
-            >
-              <MatchStarImage source={images.MatchStar} />
-            </MatchContainer>
-          )}
-          {true && (
-            <MatchContainer
-              style={{
-                backgroundColor: "#9499A7"
-              }}
-            >
-              <MatchText>?</MatchText>
-            </MatchContainer>
+          ) : (
+            <>
+              {true && (
+                <MatchContainer
+                  style={{
+                    backgroundColor: "#984446",
+                    zIndex: 10
+                  }}
+                >
+                  <MatchStarImage source={images.MatchStar} />
+                </MatchContainer>
+              )}
+              {true && (
+                <MatchContainer
+                  style={{
+                    backgroundColor: "#9499A7"
+                  }}
+                >
+                  <MatchText>?</MatchText>
+                </MatchContainer>
+              )}
+            </>
           )}
           <UserContainer>
             <UserTitleContainer>
-              <UserTitle>Алина</UserTitle>
+              <UserTitle>
+                {this.props.my ? this.props.member.Name : "Алина"}
+              </UserTitle>
               <Time>7ч.</Time>
             </UserTitleContainer>
-            <UserCaption>мгимо</UserCaption>
+            <UserCaption>
+              {this.props.my
+                ? this.props.member.UniversityAbbr.toLowerCase()
+                : "мгимо"}
+            </UserCaption>
           </UserContainer>
         </TopStartContainer>
       </TopContainer>
@@ -87,6 +117,13 @@ const AvatarContainer = styled.View`
   height: ${scale(40) + `px`};
   border-radius: 100px;
   overflow: hidden;
+`;
+
+const Circle = styled.View`
+  width: ${scale(40) + `px`};
+  height: ${scale(40) + `px`};
+  margin-left: ${scale(-10) + `px`};
+  border-radius: 100px;
 `;
 
 const MatchContainer = styled.View`

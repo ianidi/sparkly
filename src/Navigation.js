@@ -12,11 +12,12 @@ import Header from "./components/Header";
 import OnboardingScreen from "./screens/Onboarding";
 import AuthScreen from "./screens/Auth/Auth";
 import AuthSMSCodeScreen from "./screens/Auth/SMSCode";
-import AuthNameGenderScreen from "./screens/Auth/NameGender";
+import NameGenderScreen from "./screens/Auth/NameGender";
 import IntroScreen from "./screens/Auth/Intro";
 import UniversityScreen from "./screens/Auth/University";
 import FacultyScreen from "./screens/Auth/Faculty";
 import FeedScreen from "./screens/Feed";
+import FeedMyScreen from "./screens/FeedMy";
 import CameraScreen from "./screens/Camera";
 import HomeScreen from "./screens/Home";
 import ProfileScreen from "./screens/Profile";
@@ -65,7 +66,7 @@ export default class Navigation extends React.Component {
       >
         {this.props.member.status == false ? (
           <>
-            {this.props.main.onboadringComplete == false && (
+            {this.props.main.OnboadringComplete == false && (
               <Stack.Screen
                 name="Onboarding"
                 component={OnboardingScreen}
@@ -99,7 +100,7 @@ export default class Navigation extends React.Component {
               <>
                 <Stack.Screen
                   name="NameGender"
-                  component={AuthNameGenderScreen}
+                  component={NameGenderScreen}
                   options={{
                     headerTitle: null,
                     headerShown: false
@@ -201,6 +202,42 @@ export default class Navigation extends React.Component {
                 <Stack.Screen
                   name="Feed"
                   component={FeedScreen}
+                  options={{
+                    headerTitle: null,
+                    headerShown: false,
+                    ...TransitionPresets.FadeFromBottomAndroid
+                  }}
+                />
+                <Stack.Screen
+                  name="FeedMy"
+                  component={FeedMyScreen}
+                  options={{
+                    headerTitle: null,
+                    headerShown: false,
+                    ...TransitionPresets.FadeFromBottomAndroid
+                  }}
+                />
+                <Stack.Screen
+                  name="NameGender"
+                  component={NameGenderScreen}
+                  options={{
+                    headerTitle: null,
+                    headerShown: false,
+                    ...TransitionPresets.FadeFromBottomAndroid
+                  }}
+                />
+                <Stack.Screen
+                  name="University"
+                  component={UniversityScreen}
+                  options={{
+                    headerTitle: null,
+                    headerShown: false,
+                    ...TransitionPresets.FadeFromBottomAndroid
+                  }}
+                />
+                <Stack.Screen
+                  name="Faculty"
+                  component={FacultyScreen}
                   options={{
                     headerTitle: null,
                     headerShown: false,

@@ -12,7 +12,7 @@ import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../../constants/images";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")
@@ -38,10 +38,12 @@ export default class NameGenderScreen extends React.Component {
 
   onChangeNameInput = Name => {
     this.props.member.set("Name", Name);
+    this.props.member.set("Synchronized", false);
   };
 
   continue = Gender => {
     this.props.member.set("Gender", Gender);
+    this.props.member.set("Synchronized", false);
     this.props.member.NameGender();
   };
 
@@ -64,7 +66,11 @@ export default class NameGenderScreen extends React.Component {
 
     return (
       <>
-        <Title>привет, напиши{"\n"}свое имя</Title>
+        {this.props.member.SignupComplete ? (
+          <Title>изменить имя</Title>
+        ) : (
+          <Title>привет, напиши{"\n"}свое имя</Title>
+        )}
 
         <TextInput
           refInput={ref => {
@@ -97,7 +103,7 @@ export default class NameGenderScreen extends React.Component {
             <TouchableOpacity
               onPress={() => this.continue("f")}
               activeOpacity={0.9}
-              hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              hitSlop={{ top: 10, bottom: 10, left: 10 }}
             >
               <ButtonPart>
                 <ButtonText>я девушка</ButtonText>
@@ -113,7 +119,7 @@ export default class NameGenderScreen extends React.Component {
             <TouchableOpacity
               onPress={() => this.continue("m")}
               activeOpacity={0.9}
-              hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              hitSlop={{ top: 10, right: 10, bottom: 10 }}
             >
               <ButtonPart>
                 <ButtonText>я парень</ButtonText>
@@ -202,7 +208,6 @@ const Caption = styled.Text`
 
 const Button = styled.View`
   width: ${width - scale(32) + `px`};
-  height: ${verticalScale(90) + `px`};
   margin-top: ${verticalScale(40) + `px`};
   margin-bottom: ${verticalScale(20) + `px`};
   margin-left: ${scale(16) + `px`};
@@ -215,7 +220,8 @@ const Button = styled.View`
 
 const ButtonPart = styled.View`
   width: ${(width - scale(32)) / 2 - scale(1) + `px`};
-  height: ${verticalScale(90) + `px`};
+  padding-top: ${scale(25) + `px`};
+  padding-bottom: ${scale(25) + `px`};
   flex-direction: row;
   align-items: center;
   justify-content: center;
@@ -238,6 +244,6 @@ const ButtonCircle = styled.View`
 
 const ButtonDelimiter = styled.View`
   width: ${scale(1) + `px`};
-  height: ${verticalScale(90) + `px`};
+  height: 100%;
   background: #525a71;
 `;

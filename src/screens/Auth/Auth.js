@@ -7,14 +7,16 @@ import {
   BackHandler
 } from "react-native";
 //import TextInputMask from "react-native-text-input-mask";
+import { getStatusBarHeight } from "react-native-iphone-x-helper";
 import { TextInputMask } from "react-native-masked-text";
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import * as WebBrowser from "expo-web-browser";
+import * as Progress from "react-native-progress";
 import images from "../../constants/images";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")
@@ -39,7 +41,7 @@ export default class AuthScreen extends React.Component {
     this.backHandler.remove();
   }
 
-  onChangePhoneInput = PhoneMasked => {
+  onChangePhoneInput = async PhoneMasked => {
     this.setState({
       Phone: PhoneMasked
     });
@@ -146,8 +148,11 @@ export default class AuthScreen extends React.Component {
           autoFocus={true}
         />
         <InputUnderline
-          style={{ opacity: this.state.inputFocused ? 1 : 0.7 }}
+          style={{
+            opacity: this.state.inputFocused ? 1 : 0.7
+          }}
         />
+
         {this.renderTOS()}
       </>
     );
@@ -163,6 +168,19 @@ export default class AuthScreen extends React.Component {
           paddingRight: scale(16)
         }}
       >
+        {this.props.member.loading && (
+          <Progress.Circle
+            size={30}
+            indeterminate={true}
+            color="#525A71"
+            borderWidth={2}
+            style={{
+              position: "absolute",
+              top: getStatusBarHeight() + verticalScale(10),
+              right: scale(20)
+            }}
+          />
+        )}
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps={"handled"}

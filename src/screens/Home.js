@@ -13,7 +13,7 @@ import images from "../constants/images";
 import FeedCircles from "../components/FeedCircles";
 import Avatar from "../components/Avatar";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("feed")
@@ -25,6 +25,7 @@ export default class HomeScreen extends React.Component {
 
     this.state = {
       Notifications: false,
+      popupFeed: false,
       popupCamera: false
     };
   }
@@ -40,14 +41,6 @@ export default class HomeScreen extends React.Component {
     this.props.feed.init();
   };
 
-  popupCameraOpen = () => {
-    this.setState({ popupCamera: true });
-  };
-
-  popupCameraClose = () => {
-    this.setState({ popupCamera: false });
-  };
-
   componentWillUnmount() {
     this.backHandler.remove();
   }
@@ -56,12 +49,44 @@ export default class HomeScreen extends React.Component {
     this.props.navigation.goBack();
   };
 
+  popupFeedOpen = () => {
+    this.setState({ popupFeed: true, popupCamera: false });
+  };
+
+  popupFeedClose = () => {
+    this.setState({ popupFeed: false, popupCamera: false });
+  };
+
+  popupCameraOpen = () => {
+    this.setState({ popupCamera: true, popupFeed: false });
+  };
+
+  popupCameraClose = () => {
+    this.setState({ popupCamera: false, popupFeed: false });
+  };
+
   navigateCamera = () => {
     if (this.state.popupCamera) {
       this.popupCameraClose();
       return;
     }
+    if (this.state.popupFeed) {
+      this.popupFeedClose();
+      return;
+    }
     this.props.navigation.navigate("Camera");
+  };
+
+  navigateFeedMy = () => {
+    if (this.state.popupCamera) {
+      this.popupCameraClose();
+      return;
+    }
+    if (this.state.popupFeed) {
+      this.popupFeedClose();
+      return;
+    }
+    this.props.navigation.navigate("FeedMy");
   };
 
   renderHome = () => {
@@ -76,7 +101,9 @@ export default class HomeScreen extends React.Component {
               <Avatar />
               <TitleContainer>
                 <Title>{this.props.member.Name}</Title>
-                <Caption>{this.props.member.UniversityAbbr}</Caption>
+                <Caption>
+                  {this.props.member.UniversityAbbr.toLowerCase()}
+                </Caption>
               </TitleContainer>
             </TopStartContainer>
           </TouchableOpacity>
@@ -104,26 +131,44 @@ export default class HomeScreen extends React.Component {
 
         <CardContainer>
           {this.props.member.LastFeedLocalURI != null ? (
-            <CardMy>
-              <CardCircles>
-                <CardCircle
-                  style={{
-                    backgroundColor: this.props.member
-                      .LastFeedRestrictUniversity
-                      ? "#525A71"
-                      : "#fff",
-                    borderWidth: scale(1),
-                    borderColor: this.props.member.LastFeedRestrictUniversity
-                      ? "#525A71"
-                      : "#D9D9D9"
-                  }}
-                />
-              </CardCircles>
-              <CardMyImage
-                source={{ uri: this.props.member.LastFeedLocalURI }}
-              />
-              <CardMyText>моя анкета{"\n"}10м.</CardMyText>
-            </CardMy>
+            <TouchableOpacity onPress={this.navigateFeedMy} activeOpacity={0.9}>
+              <CardMy>
+                <CardImages>
+                  <CardCircles>
+                    <CardCircle
+                      style={{
+                        backgroundColor: this.props.member
+                          .LastFeedRestrictUniversity
+                          ? "#525A71"
+                          : "#fff",
+                        borderWidth: scale(1),
+                        borderColor: this.props.member
+                          .LastFeedRestrictUniversity
+                          ? "#525A71"
+                          : "#D9D9D9"
+                      }}
+                    />
+                  </CardCircles>
+
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={this.popupFeedOpen}
+                  >
+                    <CardInfo
+                      source={images.InfoWhite}
+                      style={{ marginRight: scale(10) }}
+                    />
+                  </TouchableOpacity>
+                </CardImages>
+
+                <CardMyImageContainer>
+                  <CardMyImage
+                    source={{ uri: this.props.member.LastFeedLocalURI }}
+                  />
+                </CardMyImageContainer>
+                <CardMyText>моя анкета</CardMyText>
+              </CardMy>
+            </TouchableOpacity>
           ) : (
             <TouchableOpacity onPress={this.navigateCamera} activeOpacity={0.9}>
               <CardMy
@@ -132,13 +177,26 @@ export default class HomeScreen extends React.Component {
                   borderColor: "#ebebeb"
                 }}
               >
-                <CardCircles>
-                  <CardCircle
-                    style={{
-                      backgroundColor: "#E6E6E6"
-                    }}
-                  />
-                </CardCircles>
+                <CardImages>
+                  <CardCircles>
+                    <CardCircle
+                      style={{
+                        backgroundColor: "#E6E6E6"
+                      }}
+                    />
+                  </CardCircles>
+
+                  <TouchableOpacity
+                    activeOpacity={0.9}
+                    onPress={this.popupFeedOpen}
+                  >
+                    <CardInfo
+                      source={images.Info}
+                      style={{ marginRight: scale(10) }}
+                    />
+                  </TouchableOpacity>
+                </CardImages>
+
                 <CardMyText style={{ color: "#3B435A" }}>
                   здесь будет ваша анкета, сделайте фото
                 </CardMyText>
@@ -147,7 +205,11 @@ export default class HomeScreen extends React.Component {
           )}
 
           <CardSmallContainer>
-            <TouchableOpacity onPress={this.navigateCamera} activeOpacity={0.9}>
+            <TouchableOpacity
+              onPress={this.navigateCamera}
+              activeOpacity={0.9}
+              style={{ zIndex: 1000 }}
+            >
               <CardSmall>
                 <CardImages>
                   <CameraImage source={images.Camera} />
@@ -158,7 +220,11 @@ export default class HomeScreen extends React.Component {
                     <CardInfo source={images.Info} />
                   </TouchableOpacity>
                   {this.state.popupCamera && (
-                    <PopupContainer>
+                    <PopupContainer
+                      style={{
+                        right: -10
+                      }}
+                    >
                       <TouchableOpacity
                         activeOpacity={0.9}
                         style={{
@@ -175,6 +241,34 @@ export default class HomeScreen extends React.Component {
                       <PopupText>
                         Здесь вы можете загрузить свою фотографию в ленту, чтобы
                         затем найти новых друзей для общения
+                      </PopupText>
+                    </PopupContainer>
+                  )}
+
+                  {this.state.popupFeed && (
+                    <PopupContainer
+                      style={{
+                        right: -10
+                      }}
+                    >
+                      <TouchableOpacity
+                        activeOpacity={0.9}
+                        style={{
+                          position: "absolute",
+                          top: scale(10),
+                          right: scale(10),
+                          zIndex: 1000
+                        }}
+                        onPress={this.popupFeedClose}
+                        hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                      >
+                        <PopupClose source={images.PopupClose} />
+                      </TouchableOpacity>
+                      <PopupText>
+                        В ленте можешь поделиться фотографиями как ты
+                        занимаешься спортом, гуляешь, проводишь свободное время.
+                        Поделись своим хобби и не забудь, что на фотографии
+                        должен быть только ты.
                       </PopupText>
                     </PopupContainer>
                   )}
@@ -233,7 +327,6 @@ export default class HomeScreen extends React.Component {
 
 const PopupContainer = styled.View`
   position: absolute;
-  right: 0;
   z-index: 3000;
   max-width: ${width * 0.84 + `px`};
   top: ${scale(30) + `px`};
@@ -266,7 +359,7 @@ const PopupClose = styled.Image`
 `;
 
 const TopContainer = styled.View`
-  margin-top: ${verticalScale(10) + `px`};
+  margin-top: ${verticalScale(20) + `px`};
   margin-bottom: ${verticalScale(16) + `px`};
   margin-left: ${scale(20) + `px`};
   margin-right: ${scale(20) + `px`};
@@ -372,6 +465,15 @@ const CardMy = styled.View`
   border-radius: 10px;
   background: #fafafa;
   justify-content: space-between;
+`;
+
+const CardMyImageContainer = styled.View`
+  width: ${(width - scale(39)) / 2 + `px`};
+  height: ${verticalScale(300) + `px`};
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 10px;
   overflow: hidden;
 `;
 

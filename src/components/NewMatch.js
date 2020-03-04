@@ -5,7 +5,7 @@ import { scale, verticalScale } from "react-native-size-matters";
 import { observer } from "mobx-react";
 import images from "../constants/images";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @observer
 export default class NewMatch extends React.Component {

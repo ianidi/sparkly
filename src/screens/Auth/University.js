@@ -15,7 +15,7 @@ import { debounce } from "lodash";
 import images from "../../constants/images";
 import { api } from "../../service/Api";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")
@@ -135,6 +135,7 @@ export default class UniversityScreen extends React.Component {
     this.props.member.set("UniversityID", UniversityID);
     this.props.member.set("UniversityTitle", UniversityTitle);
     this.props.member.set("UniversityAbbr", UniversityAbbr);
+    this.props.member.set("Synchronized", false);
     this.props.member.UniversitySelect();
   };
 

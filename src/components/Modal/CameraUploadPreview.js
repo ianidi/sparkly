@@ -9,12 +9,12 @@ import {
 } from "react-native-iphone-x-helper";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
-import { Switch } from "react-native-paper";
 import * as Progress from "react-native-progress";
 import images from "../../constants/images";
 import { BASE_URL } from "../../constants";
+import Switch from "../../components/Switch";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("member")
 @observer
@@ -112,16 +112,27 @@ export default class CameraUploadPreviewModal extends React.PureComponent {
               <SwitchContainer>
                 <SwitchWrapper>
                   <Switch
-                    value={this.props.member.ImageUploadRestrictUniversity}
-                    onValueChange={() => {
-                      this.props.member.toggle("ImageUploadRestrictUniversity");
+                    ref={ref => {
+                      this.switch = ref;
                     }}
-                    color={"#525A71"}
+                    colorActive="rgb(82, 90, 113)"
+                    value={this.props.member.ImageUploadRestrictUniversity}
+                    onChange={value => {
+                      this.props.member.set(
+                        "ImageUploadRestrictUniversity",
+                        value
+                      );
+                    }}
                   />
                 </SwitchWrapper>
-                <SwitchCaption>
-                  показывать студентам{"\n"}только в моем университете
-                </SwitchCaption>
+                <TouchableOpacity
+                  onPress={() => this.switch.toggle()}
+                  activeOpacity={0.9}
+                >
+                  <SwitchCaption>
+                    показывать студентам{"\n"}только в моем университете
+                  </SwitchCaption>
+                </TouchableOpacity>
               </SwitchContainer>
             </SettingsContainer>
           )}
@@ -200,16 +211,15 @@ const SwitchContainer = styled.View`
 `;
 
 const SwitchWrapper = styled.View`
-  justify-content: center;
-  margin-right: ${scale(15) + `px`};
+  margin-right: ${scale(10) + `px`};
 `;
 
 const SwitchCaption = styled.Text`
-  font-size: ${scale(16) + `px`};
-  line-height: ${scale(20) + `px`};
+  font-size: ${scale(15) + `px`};
+  line-height: ${scale(19) + `px`};
   font-family: "IBMPlexMono";
   color: #525a71;
-  max-width: ${width * 0.75 + `px`};
+  max-width: ${width * 0.7 + `px`};
 `;
 
 const ModalContainer = styled.View`

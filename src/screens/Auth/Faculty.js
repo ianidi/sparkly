@@ -12,7 +12,7 @@ import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import images from "../../constants/images";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")
@@ -22,9 +22,7 @@ export default class FacultyScreen extends React.Component {
     super(props);
 
     this.state = {
-      inputFocused: true,
-      showButton: false,
-      Faculty: ""
+      inputFocused: true
     };
   }
 
@@ -44,19 +42,11 @@ export default class FacultyScreen extends React.Component {
   };
 
   onChangeFacultyInput = Faculty => {
-    this.setState({ Faculty }, this.showButton);
-  };
-
-  showButton = () => {
-    if (this.state.Faculty.length > 2) {
-      this.setState({ showButton: true });
-    } else {
-      this.setState({ showButton: false });
-    }
+    this.props.member.set("Faculty", Faculty);
+    this.props.member.set("Synchronized", false);
   };
 
   continue = () => {
-    this.props.member.set("Faculty", this.state.Faculty);
     this.props.member.FacultySelect();
   };
 
@@ -86,7 +76,11 @@ export default class FacultyScreen extends React.Component {
           найди друзей в{" "}
           <SubtitleCite>{this.props.member.UniversityTitle}</SubtitleCite>
         </Subtitle>
-        <Title>а какой{"\n"}факультет?</Title>
+        {this.props.member.SignupComplete ? (
+          <Title>изменить факультет</Title>
+        ) : (
+          <Title>а какой{"\n"}факультет?</Title>
+        )}
 
         <TextInput
           refInput={ref => {
@@ -98,6 +92,7 @@ export default class FacultyScreen extends React.Component {
             color: "#252E48",
             marginLeft: scale(40)
           }}
+          value={this.props.member.Faculty}
           onChangeText={Faculty => {
             this.onChangeFacultyInput(Faculty);
           }}
@@ -114,23 +109,35 @@ export default class FacultyScreen extends React.Component {
         <Caption>
           эту информацию будут видеть только люди из твоего университета
         </Caption>
-        {this.state.Faculty.length == 0 && (
+        {this.props.member.Faculty.length == 0 && (
           <TouchableOpacity
             onPress={this.continue}
             activeOpacity={0.9}
             hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
-            <Skip>пропустить</Skip>
+            {this.props.member.SignupComplete ? (
+              <Skip>не указывать факультет</Skip>
+            ) : (
+              <Skip>пропустить</Skip>
+            )}
           </TouchableOpacity>
         )}
-        {this.state.showButton && (
+        {this.props.member.Faculty.length > 2 && (
           <TouchableOpacity
             onPress={this.continue}
             activeOpacity={0.9}
-            hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+            style={{
+              marginTop: verticalScale(40),
+              marginBottom: verticalScale(20)
+            }}
           >
             <Button>
-              <ButtonText>зарегистрироваться</ButtonText>
+              {this.props.member.SignupComplete ? (
+                <ButtonText>сохранить</ButtonText>
+              ) : (
+                <ButtonText>зарегистрироваться</ButtonText>
+              )}
               <ButtonCircle
                 style={{
                   backgroundColor: "#F5CFD0"
@@ -161,7 +168,7 @@ export default class FacultyScreen extends React.Component {
           keyboardShouldPersistTaps={"handled"}
           contentContainerStyle={{
             minHeight:
-              this.state.showButton && this.state.inputFocused
+              this.props.member.Faculty.length > 2 && this.state.inputFocused
                 ? height + verticalScale(40)
                 : height + verticalScale(40)
           }}
@@ -225,9 +232,8 @@ const Caption = styled.Text`
 
 const Button = styled.View`
   width: ${width - scale(32) + `px`};
-  height: ${verticalScale(90) + `px`};
-  margin-top: ${verticalScale(40) + `px`};
-  margin-bottom: ${verticalScale(20) + `px`};
+  padding-top: ${scale(25) + `px`};
+  padding-bottom: ${scale(25) + `px`};
   margin-left: ${scale(16) + `px`};
   margin-right: ${scale(16) + `px`};
   flex-direction: row;

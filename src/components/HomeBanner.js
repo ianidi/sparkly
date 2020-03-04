@@ -5,7 +5,7 @@ import { scale, verticalScale } from "react-native-size-matters";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import * as WebBrowser from "expo-web-browser";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 export default class HomeCarousel extends React.Component {
   constructor(props) {

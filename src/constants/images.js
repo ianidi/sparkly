@@ -11,6 +11,7 @@ export default images = {
   CameraReverse: require("../../assets/img/CameraReverse.png"),
   Gallery: require("../../assets/img/Gallery.png"),
   Info: require("../../assets/img/Info.png"),
+  InfoWhite: require("../../assets/img/InfoWhite.png"),
   Member: require("../../assets/img/Member.png"),
   Settings: require("../../assets/img/Settings.png"),
   Camera: require("../../assets/img/Camera.png"),

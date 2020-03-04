@@ -4,7 +4,7 @@ import * as Progress from "react-native-progress";
 import AnimatedEllipsis from "react-native-animated-ellipsis";
 import PropTypes from "prop-types";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
   container: {

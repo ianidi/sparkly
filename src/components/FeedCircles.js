@@ -5,7 +5,7 @@ import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import Svg, { G, Path, Rect } from "react-native-svg";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("feed")
 @observer

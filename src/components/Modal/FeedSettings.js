@@ -5,12 +5,11 @@ import * as NavigationService from "../../service/Navigation";
 import { getBottomSpace } from "react-native-iphone-x-helper";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
-import { Switch } from "react-native-paper";
 import FeedCircles from "../FeedCircles";
 import FeedGenderTabs from "../FeedGenderTabs";
-import images from "../../constants/images";
+import Switch from "../../components/Switch";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("feed")
 @observer
@@ -22,6 +21,10 @@ export default class FeedSettingsModal extends React.PureComponent {
   close = () => {
     this.props.feed.set("FeedSettingsOpen", false);
     this.props.modal.closeModal();
+  };
+
+  componentDidMount = () => {
+    this.props.modal.closeModals("FeedSettingsTooltip");
   };
 
   render() {
@@ -39,16 +42,24 @@ export default class FeedSettingsModal extends React.PureComponent {
             <SwitchContainer>
               <SwitchWrapper>
                 <Switch
-                  value={this.props.feed.RestrictUniversity}
-                  onValueChange={() => {
-                    this.props.feed.toggle("RestrictUniversity");
+                  ref={ref => {
+                    this.switch = ref;
                   }}
-                  color={"#525A71"}
+                  colorActive="rgb(82, 90, 113)"
+                  value={this.props.feed.RestrictUniversity}
+                  onChange={value => {
+                    this.props.feed.set("RestrictUniversity", value);
+                  }}
                 />
               </SwitchWrapper>
-              <SwitchCaption>
-                смотреть студентов только из моего универсиитета
-              </SwitchCaption>
+              <TouchableOpacity
+                onPress={() => this.switch.toggle()}
+                activeOpacity={0.9}
+              >
+                <SwitchCaption>
+                  смотреть студентов только из моего универсиитета
+                </SwitchCaption>
+              </TouchableOpacity>
             </SwitchContainer>
             <FeedGenderTabs />
           </SettingsContainer>
@@ -99,15 +110,13 @@ const SwitchContainer = styled.View`
 `;
 
 const SwitchWrapper = styled.View`
-  height: ${verticalScale(40) + `px`};
-  justify-content: center;
-  margin-right: ${scale(15) + `px`};
+  margin-right: ${scale(10) + `px`};
 `;
 
 const SwitchCaption = styled.Text`
   max-width: ${width * 0.7 + `px`};
-  font-size: ${scale(16) + `px`};
-  line-height: ${scale(20) + `px`};
+  font-size: ${scale(15) + `px`};
+  line-height: ${scale(19) + `px`};
   font-family: "IBMPlexMono";
   color: #525a71;
 `;

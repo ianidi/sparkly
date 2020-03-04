@@ -10,12 +10,11 @@ import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
-import { Switch } from "react-native-paper";
 import images from "../constants/images";
-import { api } from "../service/Api";
 import Avatar from "../components/Avatar";
+import Switch from "../components/Switch";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("main")
 @inject("member")
@@ -49,10 +48,6 @@ class ProfileScreen extends React.Component {
     this.setState({ inputFocused: false });
   };
 
-  RoommateToggle = () => {
-    this.setState({ Roommate: !this.state.Roommate });
-  };
-
   uploadAvatar = () => {
     // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
     const options = ["Сделать фотографию", "Выбрать из галереи", "Отмена"];
@@ -72,8 +67,6 @@ class ProfileScreen extends React.Component {
   };
 
   renderProfile = () => {
-    const { Roommate } = this.state;
-
     return (
       <>
         <TouchableOpacity
@@ -99,35 +92,58 @@ class ProfileScreen extends React.Component {
           </TouchableOpacity>
           <Divider />
 
-          <Label>имя</Label>
-          <Value>{this.props.member.Name}</Value>
-          <Divider />
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("NameGender")}
+            activeOpacity={0.9}
+            hitSlop={{ right: 20, left: 20 }}
+          >
+            <Label>имя</Label>
+            <Value>{this.props.member.Name}</Value>
+            <Divider />
+          </TouchableOpacity>
 
-          <Label>университет</Label>
-          <Value>{this.props.member.UniversityAbbr.toLowerCase()}</Value>
-          <Divider />
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("University")}
+            activeOpacity={0.9}
+            hitSlop={{ right: 20, left: 20 }}
+          >
+            <Label>университет</Label>
+            <Value>{this.props.member.UniversityAbbr.toLowerCase()}</Value>
+            <Divider />
+          </TouchableOpacity>
 
-          <Label>факультет</Label>
-          {this.props.member.Faculty ? (
-            <Value>{this.props.member.Faculty}</Value>
-          ) : (
-            <Value>не задан</Value>
-          )}
+          <TouchableOpacity
+            onPress={() => this.props.navigation.navigate("Faculty")}
+            activeOpacity={0.9}
+            hitSlop={{ right: 20, left: 20 }}
+          >
+            <Label>факультет</Label>
+            {this.props.member.Faculty ? (
+              <Value>{this.props.member.Faculty}</Value>
+            ) : (
+              <Value>не задан</Value>
+            )}
+          </TouchableOpacity>
         </Main>
         <DividerBig />
 
         <RoommateSearch>
           <RoommateSearchSwitch>
             <Switch
+              ref={ref => {
+                this.switch = ref;
+              }}
+              colorActive="rgb(82, 90, 113)"
               value={this.props.member.RoommateSearch}
-              onValueChange={() => this.props.member.toggle("RoommateSearch")}
-              color={"#FDE300"}
+              onChange={value => {
+                this.props.member.set("RoommateSearch", value);
+              }}
             />
           </RoommateSearchSwitch>
 
           <RoommateSearchContent>
             <TouchableOpacity
-              onPress={() => this.props.member.toggle("RoommateSearch")}
+              onPress={() => this.switch.toggle()}
               activeOpacity={0.9}
               hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
             >

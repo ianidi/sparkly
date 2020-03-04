@@ -136,6 +136,11 @@ class CameraScreen extends React.Component {
   };
 
   componentDidMount() {
+    if (this.props.main.ModalCameraContentTooltip == false) {
+      this.props.main.set("ModalCameraContentTooltip", true);
+      this.props.modal.openModal("CameraContentTooltip");
+    }
+
     FileSystem.makeDirectoryAsync(
       FileSystem.documentDirectory + "photos"
     ).catch(e => {

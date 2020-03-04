@@ -21,6 +21,7 @@ export const MemberStore = types
     demoMode: false, // Пользователь пропустил регистрацию ("не сейчас")
     status: false, // Статус авторизации пользователя
     SignupComplete: false, // Завершена ли регистрация
+    Synchronized: true, // Данные синхронизированы с сервером. false - Необходимо перезапросить инфо о пользователе с сервера. Пользователь редактировал свой профиль, но не сохранил настройки.
     Phone: types.maybe(types.string), // Номер мобильного телефона
     PhoneMasked: types.optional(types.string, "+7"), // Номер мобильного телефона в отформатированном виде (только для отображения на странице ввода кода из СМС)
     Name: types.maybe(types.string), // Имя
@@ -40,7 +41,6 @@ export const MemberStore = types
   .actions(self => ({
     clear() {
       applySnapshot(self, {});
-      self.onboadringComplete = true;
     },
     set(fieldName, value) {
       self[fieldName] = value;
@@ -60,14 +60,13 @@ export const MemberStore = types
           Phone: self.Phone
         });
         console.log(response);
+        self.loading = false;
 
         if (response.data.status == true) {
           NavigationService.navigate("AuthSMSCode");
         } else {
           message("Ошибка", "Не удалось запросить код подтверждения");
         }
-
-        self.loading = false;
       } catch (error) {
         self.loading = false;
         console.log("error", JSON.stringify(error));
@@ -75,16 +74,14 @@ export const MemberStore = types
     }),
     Auth: flow(function*(Code) {
       try {
-        //if (self.loading) {
-        //  return;
-        //}
-
         self.loading = true;
 
         const response = yield api.post("/auth/phone", {
           Phone: self.Phone,
           Code: Code
         });
+
+        self.loading = false;
 
         if (response.ok && response.data.status == true) {
           const response_2 = yield api.get("/profile");
@@ -112,12 +109,12 @@ export const MemberStore = types
           self.status = true;
         } else {
           message("Ошибка", "Неверный код подтверждения");
+          return false;
         }
-
-        self.loading = false;
       } catch (error) {
         self.loading = false;
         console.log("error", JSON.stringify(error));
+        return false;
       }
     }),
     NameGender: flow(function*() {
@@ -133,15 +130,21 @@ export const MemberStore = types
           Gender: self.Gender
         });
 
+        self.loading = false;
+
         console.log("NameGender", JSON.stringify(response));
 
         if (response.ok && response.data.status == true) {
-          NavigationService.navigate("Intro");
+          self.Synchronized = true;
+
+          if (self.SignupComplete) {
+            NavigationService.goBack();
+          } else {
+            NavigationService.navigate("Intro");
+          }
         } else {
           message("Ошибка", "Введите ваше имя");
         }
-
-        self.loading = false;
       } catch (error) {
         self.loading = false;
         console.log("error", JSON.stringify(error));
@@ -159,14 +162,19 @@ export const MemberStore = types
           UniversityID: self.UniversityID
         });
         console.log(response);
+        self.loading = false;
 
         if (response.ok && response.data.status == true) {
-          NavigationService.navigate("Faculty");
+          self.Synchronized = true;
+
+          if (self.SignupComplete) {
+            NavigationService.goBack();
+          } else {
+            NavigationService.navigate("Faculty");
+          }
         } else {
           message("Ошибка", "Не получилось выбрать институт");
         }
-
-        self.loading = false;
       } catch (error) {
         self.loading = false;
         console.log("error", JSON.stringify(error));
@@ -184,13 +192,19 @@ export const MemberStore = types
           Faculty: self.Faculty
         });
 
+        self.loading = false;
+
         if (response.ok && response.data.status == true) {
-          self.SignupComplete = true;
+          self.Synchronized = true;
+
+          if (self.SignupComplete) {
+            NavigationService.goBack();
+          } else {
+            self.SignupComplete = true;
+          }
         } else {
           message("Ошибка", "Не получилось выбрать факультет");
         }
-
-        self.loading = false;
       } catch (error) {
         self.loading = false;
         console.log("error", JSON.stringify(error));

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { scale, verticalScale } from "react-native-size-matters";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 import Composer from "./Composer";
 import Send from "./Send";

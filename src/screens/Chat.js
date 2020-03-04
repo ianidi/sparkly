@@ -4,7 +4,7 @@ import SafeAreaView from "react-native-safe-area-view";
 import { GiftedChat } from "../components/Chat";
 import ChatHeader from "../components/ChatHeader";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 export default class Example extends React.Component {
   state = {

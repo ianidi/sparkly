@@ -6,7 +6,7 @@ import { scale, verticalScale } from "react-native-size-matters";
 import images from "../constants/images";
 import { SingleImage } from "./Lightbox";
 
-const { width, height } = Dimensions.get("screen");
+const { width, height } = Dimensions.get("window");
 
 @inject("feed")
 @inject("member")

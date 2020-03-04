@@ -88,6 +88,7 @@ const {
 } = Animated;
 
 @inject("feed")
+@inject("main")
 @observer
 class FeedScreen extends React.Component {
   constructor(props) {
@@ -197,6 +198,11 @@ class FeedScreen extends React.Component {
   };
 
   swipped = ([translationX]) => {
+    if (this.props.main.ModalFeedSettingsTooltip == false) {
+      this.props.main.set("ModalFeedSettingsTooltip", true);
+      this.props.modal.openModal("FeedSettingsTooltip");
+    }
+
     if (translationX > 0) {
       this.props.feed.swipe("left");
     } else {
@@ -236,7 +242,10 @@ class FeedScreen extends React.Component {
   };
 
   componentDidMount = () => {
-    //this.props.modal.openModal("FeedOnboarding");
+    if (this.props.main.ModalFeedOnboarding == false) {
+      this.props.main.set("ModalFeedOnboarding", true);
+      this.props.modal.openModal("FeedOnboarding");
+    }
 
     //Set FeedSettings closed
     this.props.feed.set("FeedSettingsOpen", false);
