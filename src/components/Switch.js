@@ -53,7 +53,8 @@ export default class Switch extends React.Component {
       <TouchableOpacity
         activeOpacity={1}
         style={{
-          width: scale(70)
+          width: scale(70),
+          opacity: this.props.loading ? 0.6 : 1
         }}
         onPress={this.toggle}
       >

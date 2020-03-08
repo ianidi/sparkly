@@ -98,7 +98,7 @@ export default class HomeScreen extends React.Component {
             activeOpacity={0.9}
           >
             <TopStartContainer>
-              <Avatar />
+              <Avatar my={true} />
               <TitleContainer>
                 <Title>{this.props.member.Name}</Title>
                 <Caption>

@@ -289,7 +289,8 @@ class CameraScreen extends React.Component {
         headers: {
           Accept: "application/json",
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          Category: "feed"
         }
       };
 

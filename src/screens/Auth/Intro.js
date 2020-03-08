@@ -61,7 +61,11 @@ export default class IntroScreen extends React.Component {
         <TouchableOpacity
           onPress={this.complete}
           activeOpacity={0.9}
-          hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+          style={{
+            marginTop: verticalScale(36),
+            marginBottom: verticalScale(20)
+          }}
         >
           <Button>
             <ButtonText>выбрать университет</ButtonText>
@@ -120,9 +124,8 @@ const Description = styled.Text`
 
 const Button = styled.View`
   width: ${width - scale(32) + `px`};
-  height: ${verticalScale(90) + `px`};
-  margin-top: ${verticalScale(36) + `px`};
-  margin-bottom: ${verticalScale(20) + `px`};
+  padding-top: ${scale(25) + `px`};
+  padding-bottom: ${scale(25) + `px`};
   margin-left: ${scale(16) + `px`};
   margin-right: ${scale(16) + `px`};
   flex-direction: row;

@@ -179,25 +179,16 @@ class FeedScreen extends React.Component {
         translationX
       )
     );
-    /*this.translateX = cond(
-      eq(gestureState, State.END),
-      [
-        set(translationX, runSpring(clockX, translationX, snapPoint)),
-        set(offsetX, translationX),
-        cond(and(eq(clockRunning(clockX), 0), neq(translationX, 0)), [
-          call([translationX], this.swipped)
-        ]),
-        translationX
-      ],
-      cond(
-        eq(gestureState, State.BEGAN),
-        [stopClock(clockX), translationX],
-        translationX
-      )
-    );*/
+  };
+
+  null = () => {
+    this.translateX = new Value(width * 2);
+    this.translateY = new Value(0);
   };
 
   swipped = ([translationX]) => {
+    //this.null();
+
     if (this.props.main.ModalFeedSettingsTooltip == false) {
       this.props.main.set("ModalFeedSettingsTooltip", true);
       this.props.modal.openModal("FeedSettingsTooltip");
@@ -208,8 +199,11 @@ class FeedScreen extends React.Component {
     } else {
       this.props.feed.swipe("right");
     }
+  };
 
+  onLoad = () => {
     this.init();
+    this.props.feed.setIndexes();
   };
 
   like = () => {
@@ -414,7 +408,7 @@ class FeedScreen extends React.Component {
               {...{ onGestureEvent }}
             >
               <Animated.View {...{ style }}>
-                <FeedCard />
+                <FeedCard main={true} onLoad={this.onLoad} />
               </Animated.View>
             </PanGestureHandler>
           </View>

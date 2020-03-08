@@ -53,13 +53,15 @@ export default class CameraUploadPreviewModal extends React.PureComponent {
         headers: {
           Accept: "application/json",
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          Category: "feed"
         }
       };
 
-      const res = await fetch(`${BASE_URL}/feed/upload`, options);
+      const request = await fetch(`${BASE_URL}/feed/upload`, options);
+      const response = await request.json();
 
-      console.log(JSON.stringify(res));
+      console.log(JSON.stringify(response));
 
       this.props.member.set(
         "LastFeedLocalURI",

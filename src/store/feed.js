@@ -10,10 +10,12 @@ const FeedModel = types.model({
   Viewed: false,
   Date: types.maybeNull(types.string), //types.Date
   MatchCount: types.maybeNull(types.number),
+  MemberID: types.maybeNull(types.number),
+  RoommateSearch: false,
   //Thumbnail: types.maybeNull(types.string),
   MemberName: types.maybeNull(types.string),
-  MemberUniversityAbbr: types.maybeNull(types.string),
-  MemberAvatarURL: types.maybeNull(types.string)
+  UniversityAbbr: types.maybeNull(types.string),
+  AvatarURL: types.optional(types.string, "")
   //Ищу соседа
 });
 
@@ -23,23 +25,31 @@ export const FeedStore = types
     RestrictUniversity: false, // Выдавать в ленте студентов только из моего университета
     Gender: types.optional(types.string, "any"), // Выдавать в ленте анкеты только определенного пола (m/f/any)
     Feed: types.array(FeedModel),
-    FeedIndex: types.optional(types.number, 0),
     MyFeedURL: types.maybeNull(types.string),
     MyFeedVideo: false,
-    MyFeedDate: types.maybeNull(types.string) //types.Date
+    MyFeedDate: types.maybeNull(types.string), //types.Date
+    FeedIndexPrevious: types.optional(types.number, 0),
+    FeedIndex: types.optional(types.number, 0),
+    FeedIndexNext: types.optional(types.number, 0)
   })
   .views(self => ({
     get IndexPrevious() {
       let index = self.FeedIndex - 1;
 
-      if (index < 0) {
+      if (index < 0 || index > self.Feed.length - 1) {
         index = self.Feed.length - 1;
       }
 
       return index;
     },
     get IndexCurrent() {
-      return self.FeedIndex;
+      let index = self.FeedIndex;
+
+      if (index < 0 || index > self.Feed.length - 1) {
+        index = self.Feed.length - 1;
+      }
+
+      return index;
     },
     get IndexNext() {
       let index = self.FeedIndex + 1;
@@ -51,16 +61,20 @@ export const FeedStore = types
       return index;
     },
     get FeedPrevious() {
-      return self.Feed[self.IndexPrevious];
+      return self.Feed[self.FeedIndexPrevious];
     },
     get FeedCurrent() {
       return self.Feed[self.IndexCurrent];
     },
     get FeedNext() {
-      return self.Feed[self.IndexNext];
+      return self.Feed[self.FeedIndexNext];
     }
   }))
   .actions(self => ({
+    setIndexes() {
+      self.FeedIndexPrevious = self.IndexPrevious;
+      self.FeedIndexNext = self.IndexNext;
+    },
     clear() {
       applySnapshot(self, {});
     },
@@ -78,7 +92,7 @@ export const FeedStore = types
       }
     },
     afterCreate() {
-      onSnapshot(self, snapshot => console.log("snap", snapshot));
+      //onSnapshot(self, snapshot => console.log("snap", snapshot));
     },
     init() {
       self.InitFeed();
@@ -87,18 +101,19 @@ export const FeedStore = types
       try {
         const response = yield api.get("/feed");
 
-        console.log(JSON.stringify(response.data));
+        //console.log(JSON.stringify(response.data));
 
         if (response.ok && response.data.status == true) {
-          if (response.data.result.length > 0) {
-            applySnapshot(self.Feed, response.data.result);
-            NavigationService.navigate("Feed");
-          } else {
+          if (response.data.result == null) {
             message(
               "Нет новых анкет",
               "Подождите, пока в ленте появятся анкеты",
               "info"
             );
+          }
+          if (response.data.result.length > 0) {
+            applySnapshot(self.Feed, response.data.result);
+            NavigationService.navigate("Feed");
           }
         }
       } catch (error) {

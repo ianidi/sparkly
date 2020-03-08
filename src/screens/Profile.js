@@ -1,5 +1,6 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
+import AsyncStorage from "@react-native-community/async-storage";
 import {
   ScrollView,
   TouchableOpacity,
@@ -10,6 +11,11 @@ import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
+import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import * as Progress from "react-native-progress";
+import * as ImagePicker from "expo-image-picker";
+import * as Permissions from "expo-permissions";
+import { BASE_URL } from "../constants";
 import images from "../constants/images";
 import Avatar from "../components/Avatar";
 import Switch from "../components/Switch";
@@ -48,10 +54,10 @@ class ProfileScreen extends React.Component {
     this.setState({ inputFocused: false });
   };
 
-  uploadAvatar = () => {
+  changeAvatar = () => {
     // Same interface as https://facebook.github.io/react-native/docs/actionsheetios.html
     const options = ["Сделать фотографию", "Выбрать из галереи", "Отмена"];
-    const destructiveButtonIndex = 0;
+    const destructiveButtonIndex = 2;
     const cancelButtonIndex = 2;
 
     this.props.showActionSheetWithOptions(
@@ -61,9 +67,111 @@ class ProfileScreen extends React.Component {
         destructiveButtonIndex
       },
       buttonIndex => {
-        // Do something here depending on the button index selected
+        if (buttonIndex == 0) {
+          this.openCamera();
+        } else if (buttonIndex == 1) {
+          this.openGallery();
+        }
       }
     );
+  };
+
+  openCamera = async () => {
+    try {
+      let granted = true;
+
+      let cameraGranted = await Permissions.askAsync(Permissions.CAMERA);
+
+      if (cameraGranted.status !== "granted") {
+        granted = false;
+      }
+
+      if (!granted) {
+        alert("Разрешите доступ к камере в настройках");
+        return;
+      }
+
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        exif: true,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8
+      });
+
+      if (!result.cancelled) {
+        this.avatarUpload(result.uri);
+      }
+    } catch (err) {}
+  };
+
+  openGallery = async () => {
+    try {
+      let granted = true;
+
+      let cameraGranted = await Permissions.askAsync(Permissions.CAMERA_ROLL);
+
+      if (cameraGranted.status !== "granted") {
+        granted = false;
+      }
+
+      if (!granted) {
+        alert("Разрешите доступ к медиатеке в настройках");
+        return;
+      }
+
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        exif: true,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8
+      });
+
+      if (!result.cancelled) {
+        this.avatarUpload(result.uri);
+      }
+    } catch (err) {}
+  };
+
+  avatarUpload = async uri => {
+    try {
+      const token = await AsyncStorage.getItem("@Api:token");
+
+      let formData = new FormData();
+      formData.append("file", {
+        uri,
+        name: `photo.jpeg`,
+        type: `image/jpeg`
+      });
+
+      let options = {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+          Category: "avatar"
+        }
+      };
+
+      this.setState({ loading: true });
+
+      const request = await fetch(`${BASE_URL}/profile/avatar/upload`, options);
+      const response = await request.json();
+
+      this.setState({ loading: false });
+
+      if (response?.status) {
+        if (typeof response?.filename !== "undefined") {
+          this.props.member.set("AvatarURL", response.filename);
+        }
+      }
+    } catch (err) {
+      this.setState({ loading: false });
+      console.debug(JSON.stringify(err));
+    }
   };
 
   renderProfile = () => {
@@ -84,16 +192,20 @@ class ProfileScreen extends React.Component {
         <Title>мой профиль</Title>
 
         <Main>
-          <TouchableOpacity onPress={this.uploadAvatar} activeOpacity={0.9}>
+          <TouchableOpacity onPress={this.changeAvatar} activeOpacity={0.9}>
             <AvatarContainer>
-              <Avatar />
-              <AvatarAddText>добавить фотографию</AvatarAddText>
+              <Avatar my={true} />
+              {this.props.member.AvatarURL != "" ? (
+                <AvatarAddText>изменить фотографию</AvatarAddText>
+              ) : (
+                <AvatarAddText>добавить фотографию</AvatarAddText>
+              )}
             </AvatarContainer>
           </TouchableOpacity>
           <Divider />
 
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("NameGender")}
+            onPress={() => this.props.navigation.navigate("EditNameGender")}
             activeOpacity={0.9}
             hitSlop={{ right: 20, left: 20 }}
           >
@@ -103,7 +215,7 @@ class ProfileScreen extends React.Component {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("University")}
+            onPress={() => this.props.navigation.navigate("EditUniversity")}
             activeOpacity={0.9}
             hitSlop={{ right: 20, left: 20 }}
           >
@@ -113,7 +225,7 @@ class ProfileScreen extends React.Component {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate("Faculty")}
+            onPress={() => this.props.navigation.navigate("EditFaculty")}
             activeOpacity={0.9}
             hitSlop={{ right: 20, left: 20 }}
           >
@@ -133,10 +245,11 @@ class ProfileScreen extends React.Component {
               ref={ref => {
                 this.switch = ref;
               }}
-              colorActive="rgb(82, 90, 113)"
+              colorActive="rgb(253, 227, 0)"
               value={this.props.member.RoommateSearch}
+              loading={this.props.member.loading}
               onChange={value => {
-                this.props.member.set("RoommateSearch", value);
+                this.props.member.RoommateSearchToggle(value);
               }}
             />
           </RoommateSearchSwitch>
@@ -180,6 +293,19 @@ class ProfileScreen extends React.Component {
           paddingRight: scale(16)
         }}
       >
+        {this.state.loading && (
+          <Progress.Circle
+            size={30}
+            indeterminate={true}
+            color="#525A71"
+            borderWidth={2}
+            style={{
+              position: "absolute",
+              top: getStatusBarHeight() + verticalScale(10),
+              right: scale(20)
+            }}
+          />
+        )}
         <ScrollView showsVerticalScrollIndicator={false}>
           {this.renderProfile()}
         </ScrollView>

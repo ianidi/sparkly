@@ -4,12 +4,15 @@ import { Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import { getStatusBarHeight } from "react-native-iphone-x-helper";
-import { SingleImage } from "./Lightbox";
+import { formatDistance, parseISO } from "date-fns";
+import { ru } from "date-fns/locale";
 import images from "../constants/images";
 import Avatar from "./Avatar";
 
 const { width, height } = Dimensions.get("window");
 
+//AvatarURL
+//RoommateSearch
 @inject("member")
 @observer
 export default class FeedCardTop extends React.Component {
@@ -17,23 +20,11 @@ export default class FeedCardTop extends React.Component {
     return (
       <TopContainer>
         <TopStartContainer>
-          {this.props.my ? (
-            <Avatar />
-          ) : (
-            <AvatarContainer
-              style={{
-                zIndex: 5
-              }}
-            >
-              <SingleImage
-                uri="http://213.226.125.134:4000/static/Avatar_temp.png"
-                style={{
-                  width: scale(40),
-                  height: scale(40)
-                }}
-              />
-            </AvatarContainer>
-          )}
+          <Avatar
+            my={this.props.my}
+            AvatarURL={this.props.data.AvatarURL}
+            RoommateSearch={this.props.data.RoommateSearch}
+          />
 
           {this.props.my ? (
             <Circle
@@ -49,7 +40,7 @@ export default class FeedCardTop extends React.Component {
             />
           ) : (
             <>
-              {true && (
+              {false && (
                 <MatchContainer
                   style={{
                     backgroundColor: "#984446",
@@ -59,7 +50,7 @@ export default class FeedCardTop extends React.Component {
                   <MatchStarImage source={images.MatchStar} />
                 </MatchContainer>
               )}
-              {true && (
+              {false && (
                 <MatchContainer
                   style={{
                     backgroundColor: "#9499A7"
@@ -73,14 +64,22 @@ export default class FeedCardTop extends React.Component {
           <UserContainer>
             <UserTitleContainer>
               <UserTitle>
-                {this.props.my ? this.props.member.Name : "Алина"}
+                {this.props.my
+                  ? this.props.member.Name
+                  : this.props.data.MemberName}
               </UserTitle>
-              <Time>7ч.</Time>
+              {this.props.my != true && (
+                <Time>
+                  {formatDistance(parseISO(this.props.data.Date), Date.now(), {
+                    locale: ru
+                  })}
+                </Time>
+              )}
             </UserTitleContainer>
             <UserCaption>
               {this.props.my
                 ? this.props.member.UniversityAbbr.toLowerCase()
-                : "мгимо"}
+                : this.props.data.UniversityAbbr.toLowerCase()}
             </UserCaption>
           </UserContainer>
         </TopStartContainer>
@@ -90,6 +89,23 @@ export default class FeedCardTop extends React.Component {
 }
 //
 /*
+
+          {this.props.my ? (
+          ) : (
+            <AvatarContainer
+              style={{
+                zIndex: 5
+              }}
+            >
+              <SingleImage
+                uri="http://213.226.125.134:4000/static/Avatar_temp.png"
+                style={{
+                  width: scale(40),
+                  height: scale(40)
+                }}
+              />
+            </AvatarContainer>
+          )}
 
               <AvatarImage source={images.Avatar_temp} />
             */

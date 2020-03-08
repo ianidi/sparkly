@@ -54,7 +54,8 @@ export default class UniversityScreen extends React.Component {
     try {
       this.setState({ loading: true });
 
-      const response = await api.post("/signup/university/get");
+      const response = await api.post("/profile/university/get");
+      console.log(JSON.stringify(response));
 
       if (
         response.ok &&
@@ -109,7 +110,7 @@ export default class UniversityScreen extends React.Component {
     try {
       this.setState({ loading: true });
 
-      const response = await api.post("/signup/university/search", {
+      const response = await api.post("/profile/university/search", {
         Search: this.state.Search
       });
 
@@ -167,7 +168,7 @@ export default class UniversityScreen extends React.Component {
             fontSize: scale(20),
             fontFamily: "IBMPlexSans-Light",
             color: "#252E48",
-            marginTop: verticalScale(50),
+            marginTop: verticalScale(70),
             marginLeft: scale(40)
           }}
           onChangeText={Search => {
@@ -220,7 +221,9 @@ export default class UniversityScreen extends React.Component {
             >
               <SearchItem>
                 <SearchItemText>{record.Abbr}</SearchItemText>
-                <SearchItemCaption>{CityName[record.CityID]}</SearchItemCaption>
+                <SearchItemCaption>
+                  {CityTitle[record.CityID].toLowerCase()}
+                </SearchItemCaption>
               </SearchItem>
             </TouchableOpacity>
           ))}
@@ -230,7 +233,25 @@ export default class UniversityScreen extends React.Component {
   }
 }
 
-const CityName = { 1: "москва", 2: "2", 3: "3" };
+const CityTitle = {
+  1: "Москва",
+  2: "СПБ",
+  3: "Новосибирск",
+  4: "Екатеринбург",
+  5: "Нижний Новгород",
+  6: "Казань",
+  7: "Челябинск",
+  8: "Омск",
+  9: "Самара",
+  10: "Ростов-на-Дону",
+  11: "Уфа",
+  12: "Красноярск",
+  13: "Воронеж",
+  14: "Пермь",
+  15: "Волгоград",
+  16: "Краснодар",
+  17: "Томск"
+};
 
 const ArrowBack = styled.Image`
   width: ${scale(24) + `px`};

@@ -114,6 +114,10 @@ export default class FacultyScreen extends React.Component {
             onPress={this.continue}
             activeOpacity={0.9}
             hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            style={{
+              marginTop: verticalScale(10),
+              marginBottom: verticalScale(20)
+            }}
           >
             {this.props.member.SignupComplete ? (
               <Skip>не указывать факультет</Skip>
@@ -261,8 +265,6 @@ const ButtonCircle = styled.View`
 const Skip = styled.Text`
   font-size: ${scale(16) + `px`};
   line-height: ${scale(24) + `px`};
-  margin-top: ${verticalScale(10) + `px`};
-  margin-bottom: ${verticalScale(20) + `px`};
   margin-left: ${scale(40) + `px`};
   font-family: "IBMPlexMono";
   color: #525a71;

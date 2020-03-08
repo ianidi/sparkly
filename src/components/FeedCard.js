@@ -9,6 +9,7 @@ import Animated from "react-native-reanimated";
 import { BASE_URL } from "../constants";
 import images from "../constants/images";
 import FeedCardTop from "./FeedCardTop";
+import FastImage from "react-native-fast-image";
 
 const { width, height } = Dimensions.get("window");
 
@@ -21,83 +22,92 @@ export default class FeedCard extends React.Component {
   };
 
   render() {
-    const { swipeLeft, swipeRight } = this.props;
+    const { swipeLeft, swipeRight, main } = this.props;
 
     return (
       <View style={StyleSheet.absoluteFill}>
-        <Animated.View
-          style={[StyleSheet.absoluteFill, { opacity: swipeLeft }]}
-        >
-          <FeedCardTop />
-          {!this.props.feed.FeedPrevious.Video ? (
-            <Image
-              source={{
-                uri: BASE_URL + "/static/" + this.props.feed.FeedPrevious.URL
-              }}
-              style={styles.image}
-            />
-          ) : (
-            <Image
-              source={{
-                uri:
-                  BASE_URL + "/static/" + this.props.feed.FeedPrevious.Thumbnail
-              }}
-              style={styles.image}
-            />
-          )}
-        </Animated.View>
+        {main ? (
+          <Animated.View style={[StyleSheet.absoluteFill]}>
+            <FeedCardTop data={this.props.feed.FeedCurrent} />
 
-        <Animated.View
-          style={[StyleSheet.absoluteFill, { opacity: swipeRight }]}
-        >
-          <FeedCardTop />
-          {!this.props.feed.FeedNext.Video ? (
-            <Image
-              source={{
-                uri: BASE_URL + "/static/" + this.props.feed.FeedNext.URL
-              }}
-              style={styles.image}
-            />
-          ) : (
-            <Image
-              source={{
-                uri: BASE_URL + "/static/" + this.props.feed.FeedNext.Thumbnail
-              }}
-              style={styles.image}
-            />
-          )}
-        </Animated.View>
+            {!this.props.feed.FeedCurrent.Video &&
+              swipeLeft == 0 &&
+              swipeRight == 0 && (
+                <FastImage
+                  source={{
+                    uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
+                  }}
+                  style={styles.image}
+                  onLoadEnd={this.props.onLoad}
+                />
+              )}
+            {this.props.feed.FeedCurrent.Video &&
+              swipeLeft == 0 &&
+              swipeRight == 0 && (
+                <Video
+                  source={{
+                    uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
+                  }}
+                  rate={1.0}
+                  volume={1.0}
+                  isMuted={false}
+                  resizeMode="cover"
+                  shouldPlay
+                  isLooping
+                  style={styles.video}
+                />
+              )}
+          </Animated.View>
+        ) : (
+          <>
+            <Animated.View
+              style={[StyleSheet.absoluteFill, { opacity: swipeLeft }]}
+            >
+              <FeedCardTop data={this.props.feed.FeedPrevious} />
+              {!this.props.feed.FeedPrevious.Video ? (
+                <FastImage
+                  source={{
+                    uri:
+                      BASE_URL + "/static/" + this.props.feed.FeedPrevious.URL
+                  }}
+                  style={styles.image}
+                />
+              ) : (
+                <FastImage
+                  source={{
+                    uri:
+                      BASE_URL +
+                      "/static/" +
+                      this.props.feed.FeedPrevious.Thumbnail
+                  }}
+                  style={styles.image}
+                />
+              )}
+            </Animated.View>
 
-        <Animated.View style={[StyleSheet.absoluteFill]}>
-          <FeedCardTop />
-
-          {!this.props.feed.FeedCurrent.Video &&
-            swipeLeft == 0 &&
-            swipeRight == 0 && (
-              <Image
-                source={{
-                  uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
-                }}
-                style={styles.image}
-              />
-            )}
-          {this.props.feed.FeedCurrent.Video &&
-            swipeLeft == 0 &&
-            swipeRight == 0 && (
-              <Video
-                source={{
-                  uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
-                }}
-                rate={1.0}
-                volume={1.0}
-                isMuted={false}
-                resizeMode="cover"
-                shouldPlay
-                isLooping
-                style={styles.video}
-              />
-            )}
-        </Animated.View>
+            <Animated.View
+              style={[StyleSheet.absoluteFill, { opacity: swipeRight }]}
+            >
+              <FeedCardTop data={this.props.feed.FeedNext} />
+              {!this.props.feed.FeedNext.Video ? (
+                <FastImage
+                  source={{
+                    uri: BASE_URL + "/static/" + this.props.feed.FeedNext.URL
+                  }}
+                  style={styles.image}
+                />
+              ) : (
+                <FastImage
+                  source={{
+                    uri:
+                      BASE_URL + "/static/" + this.props.feed.FeedNext.Thumbnail
+                  }}
+                  style={styles.image}
+                />
+              )}
+            </Animated.View>
+          </>
+        )}
       </View>
     );
   }

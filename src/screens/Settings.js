@@ -1,5 +1,6 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
+import AsyncStorage from "@react-native-community/async-storage";
 import { TouchableOpacity, Dimensions, BackHandler } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
@@ -20,7 +21,7 @@ class Notifications extends React.Component {
             ref={ref => {
               this.switch = ref;
             }}
-            colorActive="rgb(253, 227, 0)"
+            colorActive="rgb(253, 227, 0)" //rgb(82, 90, 113)
             value={this.props.main.ChatNotificationsEnabled}
             onChange={value => {
               this.props.main.set("ChatNotificationsEnabled", value);
@@ -76,7 +77,14 @@ export default class SettingsScreen extends React.Component {
     this.setState({ inputFocused: false });
   };
 
-  signOut = () => {
+  signOut = async () => {
+    try {
+      await AsyncStorage.removeItem("@Api:token");
+    } catch (e) {
+      console.log(e);
+      return;
+    }
+
     this.props.main.clear();
     this.props.feed.clear();
     this.props.member.clear();
@@ -101,7 +109,13 @@ export default class SettingsScreen extends React.Component {
 
         <Notifications />
 
-        <TouchableOpacity onPress={this.signOut} activeOpacity={0.9}>
+        <TouchableOpacity
+          onPress={this.signOut}
+          activeOpacity={0.9}
+          style={{
+            marginTop: scale(50)
+          }}
+        >
           <ButtonProfile>
             <ButtonProfileText>выйти из аккаунта</ButtonProfileText>
           </ButtonProfile>
@@ -154,7 +168,6 @@ const Title = styled.Text`
 
 const ButtonProfile = styled.View`
   width: ${width - scale(30) + `px`};
-  margin-top: ${scale(50) + `px`};
   padding-top: ${scale(16) + `px`};
   padding-bottom: ${scale(16) + `px`};
   margin-left: ${scale(15) + `px`};

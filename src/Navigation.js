@@ -218,7 +218,7 @@ export default class Navigation extends React.Component {
                   }}
                 />
                 <Stack.Screen
-                  name="NameGender"
+                  name="EditNameGender"
                   component={NameGenderScreen}
                   options={{
                     headerTitle: null,
@@ -227,7 +227,7 @@ export default class Navigation extends React.Component {
                   }}
                 />
                 <Stack.Screen
-                  name="University"
+                  name="EditUniversity"
                   component={UniversityScreen}
                   options={{
                     headerTitle: null,
@@ -236,7 +236,7 @@ export default class Navigation extends React.Component {
                   }}
                 />
                 <Stack.Screen
-                  name="Faculty"
+                  name="EditFaculty"
                   component={FacultyScreen}
                   options={{
                     headerTitle: null,
