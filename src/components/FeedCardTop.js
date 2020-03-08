@@ -11,8 +11,6 @@ import Avatar from "./Avatar";
 
 const { width, height } = Dimensions.get("window");
 
-//AvatarURL
-//RoommateSearch
 @inject("member")
 @observer
 export default class FeedCardTop extends React.Component {
@@ -20,11 +18,14 @@ export default class FeedCardTop extends React.Component {
     return (
       <TopContainer>
         <TopStartContainer>
-          <Avatar
-            my={this.props.my}
-            AvatarURL={this.props.data.AvatarURL}
-            RoommateSearch={this.props.data.RoommateSearch}
-          />
+          {this.props.my ? (
+            <Avatar my={this.props.my} />
+          ) : (
+            <Avatar
+              AvatarURL={this.props.data.AvatarURL}
+              RoommateSearch={this.props.data.RoommateSearch}
+            />
+          )}
 
           {this.props.my ? (
             <Circle

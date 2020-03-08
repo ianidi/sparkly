@@ -119,5 +119,27 @@ export const FeedStore = types
       } catch (error) {
         console.log("error", JSON.stringify(error));
       }
+    }),
+    Report: flow(function*(reason) {
+      try {
+        const response = yield api.post("/report", {
+          FeedID: self.FeedCurrent.FeedID,
+          Reason: reason
+        });
+
+        if (response.ok && response.data.status == true) {
+          message(
+            "Жалоба отправлена",
+            "Ваша жалоба успешно отправлена",
+            "success"
+          );
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log("error", JSON.stringify(error));
+        return false;
+      }
     })
   }));

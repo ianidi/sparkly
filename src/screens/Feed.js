@@ -27,6 +27,7 @@ import LottieView from "lottie-react-native";
 import images from "../constants/images";
 import FeedCard from "../components/FeedCard";
 import FeedCircles from "../components/FeedCircles";
+import ReportModal from "../components/Modal/Report";
 
 function runSpring(clock, value, dest) {
   const state = {
@@ -275,9 +276,15 @@ class FeedScreen extends React.Component {
         destructiveButtonIndex
       },
       buttonIndex => {
-        // Do something here depending on the button index selected
+        if (buttonIndex == 0) {
+          this.openReportModal();
+        }
       }
     );
+  };
+
+  openReportModal = () => {
+    this.reportModal.openModal();
   };
 
   render() {
@@ -300,7 +307,7 @@ class FeedScreen extends React.Component {
     });
     const style = {
       ...StyleSheet.absoluteFillObject,
-      zIndex: 900,
+      zIndex: 5,
       transform: [{ translateX }, { translateY }, { rotateZ }]
     };
     //, backgroundColor: "#fff"
@@ -310,6 +317,12 @@ class FeedScreen extends React.Component {
           flex: 1
         }}
       >
+        <ReportModal
+          ref={el => {
+            this.reportModal = el;
+          }}
+        />
+
         <CloseContainer>
           <TouchableOpacity
             onPress={this.closePress}
@@ -324,7 +337,7 @@ class FeedScreen extends React.Component {
           <View
             style={{
               position: "absolute",
-              zIndex: 10000,
+              zIndex: 200,
               top: 0,
               left: 0,
               right: 0,
@@ -350,7 +363,7 @@ class FeedScreen extends React.Component {
           activeOpacity={0.9}
           style={{
             position: "absolute",
-            zIndex: 9999,
+            zIndex: 10,
             bottom: getBottomSpace() + verticalScale(140),
             right: scale(29)
           }}
@@ -371,7 +384,7 @@ class FeedScreen extends React.Component {
             hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
             style={{
               position: "absolute",
-              zIndex: 9999,
+              zIndex: 3000,
               bottom: getBottomSpace() + verticalScale(40),
               alignSelf: "center"
             }}
@@ -399,7 +412,7 @@ class FeedScreen extends React.Component {
           <View
             style={{
               flex: 1,
-              zIndex: 100
+              zIndex: 5
             }}
           >
             <FeedCard {...{ swipeLeft, swipeRight }} />

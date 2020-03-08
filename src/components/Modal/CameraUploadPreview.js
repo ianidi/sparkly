@@ -54,7 +54,8 @@ export default class CameraUploadPreviewModal extends React.PureComponent {
           Accept: "application/json",
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
-          Category: "feed"
+          Category: "feed",
+          RestrictUniversity: this.props.member.ImageUploadRestrictUniversity
         }
       };
 
