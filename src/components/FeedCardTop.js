@@ -22,7 +22,7 @@ export default class FeedCardTop extends React.Component {
             <Avatar my={this.props.my} />
           ) : (
             <Avatar
-              AvatarURL={this.props.data.AvatarURL}
+              AvatarURI={this.props.data.AvatarURI}
               RoommateSearch={this.props.data.RoommateSearch}
             />
           )}
@@ -30,11 +30,11 @@ export default class FeedCardTop extends React.Component {
           {this.props.my ? (
             <Circle
               style={{
-                backgroundColor: this.props.member.LastFeedRestrictUniversity
+                backgroundColor: this.props.member.MemberFeedRestrictUniversity
                   ? "#525A71"
                   : "#fff",
                 borderWidth: scale(1),
-                borderColor: this.props.member.LastFeedRestrictUniversity
+                borderColor: this.props.member.MemberFeedRestrictUniversity
                   ? "#525A71"
                   : "#D9D9D9"
               }}

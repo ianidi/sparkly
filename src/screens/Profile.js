@@ -161,11 +161,13 @@ class ProfileScreen extends React.Component {
       const request = await fetch(`${BASE_URL}/profile/avatar/upload`, options);
       const response = await request.json();
 
+      console.log(JSON.stringify(response));
+
       this.setState({ loading: false });
 
       if (response?.status) {
         if (typeof response?.filename !== "undefined") {
-          this.props.member.set("AvatarURL", response.filename);
+          this.props.member.set("AvatarURI", response.filename);
         }
       }
     } catch (err) {

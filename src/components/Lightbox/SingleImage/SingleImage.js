@@ -237,7 +237,7 @@ export default class SingleImage extends PureComponent {
           alwaysBounceVertical={false}
         >
           <Image
-            source={{ uri: url }}
+            source={{ uri: uri }}
             style={[{ flex: 1 }, { resizeMode: "contain" }]}
             {...this.panResponder.panHandlers}
           />
@@ -309,7 +309,7 @@ export default class SingleImage extends PureComponent {
         >
           <View style={index + 1 === 1 ? getOpacity() : null}>
             <ImageCustom
-              url={uri}
+              uri={uri}
               style={[
                 {
                   resizeMode: "cover",

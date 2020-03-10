@@ -35,7 +35,7 @@ export default class FeedCard extends React.Component {
               swipeRight == 0 && (
                 <FastImage
                   source={{
-                    uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
+                    uri: this.props.feed.FeedCurrent.URI
                   }}
                   style={styles.image}
                   onLoadEnd={this.props.onLoad}
@@ -46,7 +46,7 @@ export default class FeedCard extends React.Component {
               swipeRight == 0 && (
                 <Video
                   source={{
-                    uri: BASE_URL + "/static/" + this.props.feed.FeedCurrent.URL
+                    uri: this.props.feed.FeedCurrent.URI
                   }}
                   rate={1.0}
                   volume={1.0}
@@ -67,18 +67,14 @@ export default class FeedCard extends React.Component {
               {!this.props.feed.FeedPrevious.Video ? (
                 <FastImage
                   source={{
-                    uri:
-                      BASE_URL + "/static/" + this.props.feed.FeedPrevious.URL
+                    uri: this.props.feed.FeedPrevious.URI
                   }}
                   style={styles.image}
                 />
               ) : (
                 <FastImage
                   source={{
-                    uri:
-                      BASE_URL +
-                      "/static/" +
-                      this.props.feed.FeedPrevious.Thumbnail
+                    uri: this.props.feed.FeedPrevious.Thumbnail
                   }}
                   style={styles.image}
                 />
@@ -92,15 +88,14 @@ export default class FeedCard extends React.Component {
               {!this.props.feed.FeedNext.Video ? (
                 <FastImage
                   source={{
-                    uri: BASE_URL + "/static/" + this.props.feed.FeedNext.URL
+                    uri: this.props.feed.FeedNext.URI
                   }}
                   style={styles.image}
                 />
               ) : (
                 <FastImage
                   source={{
-                    uri:
-                      BASE_URL + "/static/" + this.props.feed.FeedNext.Thumbnail
+                    uri: this.props.feed.FeedNext.Thumbnail
                   }}
                   style={styles.image}
                 />

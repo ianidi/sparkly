@@ -9,7 +9,8 @@ import {
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
-import images from "../constants/images";
+import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import * as Progress from "react-native-progress";
 import {
   hobby,
   sport,
@@ -34,7 +35,8 @@ export default class MessagesScreen extends React.Component {
       title: "увлечения и хобби",
       interests: hobby,
       showButton: true,
-      selected: []
+      selected: [],
+      loading: false
     };
   }
 
@@ -63,9 +65,30 @@ export default class MessagesScreen extends React.Component {
     });
   };
 
-  continue = () => {
+  continue = async () => {
+    if (this.state.loading) {
+      return;
+    }
+
+    this.setState({ loading: true });
+
     let data = this.state.interests.filter(item => item.Selected == true);
-    //console.log(data);
+    let array = [];
+
+    Object.keys(data).map(function(key) {
+      array.push(data[key].InterestID);
+    });
+
+    let result = await this.props.member.InterestsUpdate(
+      this.state.screen,
+      JSON.stringify(array)
+    );
+
+    this.setState({ loading: false });
+
+    if (result == false) {
+      return;
+    }
 
     let nextScreen, title, interests;
 
@@ -161,6 +184,19 @@ export default class MessagesScreen extends React.Component {
           paddingRight: scale(15)
         }}
       >
+        {this.state.loading && (
+          <Progress.Circle
+            size={30}
+            indeterminate={true}
+            color="#525A71"
+            borderWidth={2}
+            style={{
+              position: "absolute",
+              top: getStatusBarHeight() + verticalScale(10),
+              right: scale(20)
+            }}
+          />
+        )}
         {/*<TouchableOpacity
         activeOpacity={0.9}
         onPress={this.arrowBackPress}

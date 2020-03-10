@@ -1,7 +1,7 @@
 import React from "react";
 import { inject, observer } from "mobx-react";
 import AsyncStorage from "@react-native-community/async-storage";
-import { TouchableOpacity, Dimensions, BackHandler } from "react-native";
+import { TouchableOpacity, Dimensions, BackHandler, Alert } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
@@ -53,8 +53,7 @@ export default class SettingsScreen extends React.Component {
     super(props);
 
     this.state = {
-      inputFocused: true,
-      loading: false
+      inputFocused: true
     };
   }
 
@@ -77,6 +76,24 @@ export default class SettingsScreen extends React.Component {
     this.setState({ inputFocused: false });
   };
 
+  signOutPrompt = () => {
+    Alert.alert(
+      "Выход",
+      "Вы уверены, что желаете выйти из аккаунта?",
+      [
+        {
+          text: "Отменить",
+          style: "cancel"
+        },
+        {
+          text: "Выйти",
+          onPress: this.signOut
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
   signOut = async () => {
     try {
       await AsyncStorage.removeItem("@Api:token");
@@ -88,6 +105,49 @@ export default class SettingsScreen extends React.Component {
     this.props.main.clear();
     this.props.feed.clear();
     this.props.member.clear();
+  };
+
+  deactivateAccountPrompt = () => {
+    Alert.alert(
+      "Удаление аккаунта",
+      "Вы уверены, что желаете навсегда удалить свой аккаунт?",
+      [
+        {
+          text: "Отменить",
+          style: "cancel"
+        },
+        {
+          text: "Удалить",
+          onPress: this.deactivateAccountPromptSecond
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  deactivateAccountPromptSecond = () => {
+    Alert.alert(
+      "Последнее предупреждение",
+      "Удаление аккаунта невозможно отменить.",
+      [
+        {
+          text: "Не удалять",
+          style: "cancel"
+        },
+        {
+          text: "Удалить",
+          onPress: this.deactivateAccount
+        }
+      ],
+      { cancelable: false }
+    );
+  };
+
+  deactivateAccount = async () => {
+    const result = await this.props.member.DeactivateAccount();
+    if (result) {
+      this.signOut();
+    }
   };
 
   renderSettings = () => {
@@ -110,7 +170,7 @@ export default class SettingsScreen extends React.Component {
         <Notifications />
 
         <TouchableOpacity
-          onPress={this.signOut}
+          onPress={this.signOutPrompt}
           activeOpacity={0.9}
           style={{
             marginTop: scale(50)
@@ -122,7 +182,7 @@ export default class SettingsScreen extends React.Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          //onPress={this.deactivateAccount}
+          onPress={this.deactivateAccountPrompt}
           activeOpacity={0.9}
           hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           style={{

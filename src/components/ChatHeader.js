@@ -1,21 +1,60 @@
 import * as React from "react";
-import { Dimensions, TouchableOpacity } from "react-native";
+import { Dimensions, TouchableOpacity, Alert } from "react-native";
 import * as NavigationService from "../service/Navigation";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
+import { connectActionSheet } from "@expo/react-native-action-sheet";
+import {
+  getStatusBarHeight,
+  getBottomSpace
+} from "react-native-iphone-x-helper";
 import images from "../constants/images";
-import { getStatusBarHeight } from "react-native-iphone-x-helper";
+import ReportChatModal from "./Modal/ReportChat";
 
 const { width, height } = Dimensions.get("window");
 
-export default class ChatHeader extends React.Component {
+class ChatHeader extends React.Component {
   arrowBackPress = () => {
     NavigationService.goBack();
+  };
+
+  report = () => {
+    const options = ["Пожаловаться", "Заблокировать пользователя", "Отмена"];
+    const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 2;
+
+    this.props.showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        destructiveButtonIndex
+      },
+      buttonIndex => {
+        if (buttonIndex == 0) {
+          this.openReportChatModal();
+        } else if (buttonIndex == 1) {
+          Alert.alert(
+            "Пользователь заблокирован",
+            "Вы больше не будете получать сообщения от этого пользователя.",
+            [{ text: "OK", onPress: () => NavigationService.goBack() }]
+          );
+        }
+      }
+    );
+  };
+
+  openReportChatModal = () => {
+    this.reportChatModal.openModal();
   };
 
   render() {
     return (
       <>
+        <ReportChatModal
+          ref={el => {
+            this.reportChatModal = el;
+          }}
+        />
         <Spacing />
         <Container>
           <TopContainer>
@@ -58,6 +97,16 @@ export default class ChatHeader extends React.Component {
                 <UserCaption>мгимо</UserCaption>
               </UserContainer>
             </TopStartContainer>
+
+            <ReportContainer>
+              <TouchableOpacity
+                onPress={this.report}
+                activeOpacity={0.9}
+                hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+              >
+                <ReportImage source={images.ReportDotsBlack} />
+              </TouchableOpacity>
+            </ReportContainer>
           </TopContainer>
           <Delimiter />
         </Container>
@@ -65,6 +114,19 @@ export default class ChatHeader extends React.Component {
     );
   }
 }
+
+export default connectActionSheet(ChatHeader);
+
+const ReportContainer = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ReportImage = styled.Image`
+  width: ${scale(16) + `px`};
+  height: ${scale(4) + `px`};
+`;
 
 const Spacing = styled.View`
   height: ${verticalScale(34) + scale(29) + `px`};

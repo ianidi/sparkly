@@ -130,7 +130,7 @@ export default class HomeScreen extends React.Component {
         <Delimiter />
 
         <CardContainer>
-          {this.props.member.LastFeedLocalURI != null ? (
+          {this.props.member.MemberFeedURI != null ? (
             <TouchableOpacity onPress={this.navigateFeedMy} activeOpacity={0.9}>
               <CardMy>
                 <CardImages>
@@ -138,12 +138,12 @@ export default class HomeScreen extends React.Component {
                     <CardCircle
                       style={{
                         backgroundColor: this.props.member
-                          .LastFeedRestrictUniversity
+                          .MemberFeedRestrictUniversity
                           ? "#525A71"
                           : "#fff",
                         borderWidth: scale(1),
                         borderColor: this.props.member
-                          .LastFeedRestrictUniversity
+                          .MemberFeedRestrictUniversity
                           ? "#525A71"
                           : "#D9D9D9"
                       }}
@@ -163,7 +163,7 @@ export default class HomeScreen extends React.Component {
 
                 <CardMyImageContainer>
                   <CardMyImage
-                    source={{ uri: this.props.member.LastFeedLocalURI }}
+                    source={{ uri: this.props.member.MemberFeedURI }}
                   />
                 </CardMyImageContainer>
                 <CardMyText>моя анкета</CardMyText>

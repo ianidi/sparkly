@@ -18,7 +18,7 @@ export default class Avatar extends React.Component {
       <>
         {this.props.my ? (
           <>
-            {this.props.member.AvatarURL != "" ? (
+            {this.props.member.AvatarURI != "" ? (
               <>
                 <AvatarContainer
                   style={{
@@ -31,8 +31,7 @@ export default class Avatar extends React.Component {
                   }}
                 >
                   <SingleImage
-                    //uri="http://213.226.125.134:4000/static/Avatar_temp.png"
-                    uri={`${BASE_URL}/static/${this.props.member.AvatarURL}`}
+                    uri={this.props.member.AvatarURI}
                     style={{
                       width: scale(40),
                       height: scale(40)
@@ -53,7 +52,7 @@ export default class Avatar extends React.Component {
           </>
         ) : (
           <>
-            {this.props.AvatarURL != "" ? (
+            {this.props.AvatarURI != "" ? (
               <>
                 <AvatarContainer
                   style={{
@@ -64,8 +63,7 @@ export default class Avatar extends React.Component {
                   }}
                 >
                   <SingleImage
-                    //uri="http://213.226.125.134:4000/static/Avatar_temp.png"
-                    uri={`${BASE_URL}/static/${this.props.AvatarURL}`}
+                    uri={this.props.AvatarURI}
                     style={{
                       width: scale(40),
                       height: scale(40)

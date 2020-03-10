@@ -27,6 +27,7 @@ export default images = {
   NewMatchClose: require("../../assets/img/NewMatchClose.png"),
   PopupClose: require("../../assets/img/PopupClose.png"),
   ReportDots: require("../../assets/img/ReportDots.png"),
-  Like: require("../../assets/img/Like.png"),
-  LottieLike: require("../../assets/lottie/Like.json")
+  ReportDotsBlack: require("../../assets/img/ReportDotsBlack.png"),
+  Fave: require("../../assets/img/Fave.png"),
+  LottieFave: require("../../assets/lottie/Fave.json")
 };

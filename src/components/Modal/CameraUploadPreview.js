@@ -13,6 +13,7 @@ import * as Progress from "react-native-progress";
 import images from "../../constants/images";
 import { BASE_URL } from "../../constants";
 import Switch from "../../components/Switch";
+import { message } from "../../service/Message";
 
 const { width, height } = Dimensions.get("window");
 
@@ -64,21 +65,24 @@ export default class CameraUploadPreviewModal extends React.PureComponent {
 
       console.log(JSON.stringify(response));
 
-      this.props.member.set(
-        "LastFeedLocalURI",
-        this.props.member.ImageUploadLocalURI
-      );
-      this.props.member.set(
-        "LastFeedRestrictUniversity",
-        this.props.member.ImageUploadRestrictUniversity
-      );
+      if (response?.status) {
+        if (typeof response?.filename !== "undefined") {
+          this.props.member.set("MemberFeedURI", response.filename);
+          this.props.member.set(
+            "MemberFeedRestrictUniversity",
+            this.props.member.ImageUploadRestrictUniversity
+          );
+          NavigationService.goBack();
+          this.close();
+          return;
+        }
+      }
 
-      //TODO: update user feed
-      NavigationService.goBack();
-      this.close();
+      message("Ошибка загрузки", "Попробуйте еще раз");
+      this.setState({ uploading: false });
     } catch (err) {
       this.setState({ uploading: false });
-      alert("Не удалось загрузить изображение");
+      message("Ошибка загрузки", "Попробуйте еще раз");
       console.debug(JSON.stringify(err));
     }
   };

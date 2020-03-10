@@ -31,13 +31,13 @@ export const MemberStore = types
     UniversityTitle: types.maybe(types.string), // Название университета, к которому относится пользователь
     UniversityAbbr: types.maybe(types.string), // Аббревиатура университета, к которому относится пользователь
     Faculty: types.maybe(types.string), // Произвольное описание факультета пользователя
-    AvatarURL: types.optional(types.string, ""), // URL адрес аватара пользователя
+    AvatarURI: types.optional(types.string, ""), // URI адрес аватара пользователя
     Interests: types.array(InterestModel), // Интересы пользователя
     RoommateSearch: false, // Показывать в анкете статус "ищу соседа"
     ImageUploadLocalURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним. Используется для показа превью и загрузки на сервер в ленту
     ImageUploadRestrictUniversity: false, // Переключатель при загрузке контента в ленту: показывать контент только студентам из моего университета
-    LastFeedLocalURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним и успешно загрузил на сервер
-    LastFeedRestrictUniversity: false // Переключатель при последней успешной загрузке контента в ленту: показывать контент только студентам из моего университета
+    MemberFeedURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним и успешно загрузил на сервер
+    MemberFeedRestrictUniversity: false // Переключатель при последней успешной загрузке контента в ленту: показывать контент только студентам из моего университета
   })
   .actions(self => ({
     clear() {
@@ -103,8 +103,14 @@ export const MemberStore = types
                 self.UniversityID = result.University[0].UniversityID;
                 self.UniversityTitle = result.University[0].Title;
                 self.UniversityAbbr = result.University[0].Abbr;
-                self.AvatarURL = result.AvatarURL;
+                self.AvatarURI = result.AvatarURI;
                 self.RoommateSearch = result.RoommateSearch;
+
+                if (typeof result?.Feed[0] != "undefined") {
+                  self.MemberFeedRestrictUniversity =
+                    result.Feed[0].RestrictUniversity;
+                  self.MemberFeedURI = result.Feed[0].URI;
+                }
               }
 
               // Пользователь авторизован
@@ -223,6 +229,48 @@ export const MemberStore = types
       } catch (error) {
         self.loading = false;
         console.log("error", JSON.stringify(error));
+      }
+    }),
+    DeactivateAccount: flow(function*() {
+      try {
+        self.loading = true;
+
+        const response = yield api.post("/deactivateAccount");
+
+        console.log(JSON.stringify(response));
+        self.loading = false;
+
+        if (response.ok && response.data.status == true) {
+          return true;
+        }
+        return false;
+      } catch (error) {
+        self.loading = false;
+        console.log("error", JSON.stringify(error));
+        return false;
+      }
+    }),
+    InterestsUpdate: flow(function*(category, value) {
+      try {
+        self.loading = true;
+
+        const response = yield api.post("/profile/interests", {
+          Category: category,
+          Interests: value
+        });
+        console.log(JSON.stringify(response));
+        self.loading = false;
+
+        if (response.ok && response.data.status == true) {
+          return true;
+        } else {
+          message("Ошибка", "Не удалось обновить интересы");
+        }
+        return false;
+      } catch (error) {
+        self.loading = false;
+        console.log("error", JSON.stringify(error));
+        return false;
       }
     })
   }));

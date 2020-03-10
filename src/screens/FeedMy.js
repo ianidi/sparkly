@@ -51,7 +51,7 @@ export default class FeedMyScreen extends React.PureComponent {
         <ModalContainer>
           <Image
             source={{
-              uri: this.props.member.LastFeedLocalURI
+              uri: this.props.member.MemberFeedURI
             }}
             style={styles.image}
           />

@@ -5,9 +5,10 @@ import { message } from "../service/Message";
 
 const FeedModel = types.model({
   FeedID: types.identifierNumber,
-  URL: types.string,
+  URI: types.string,
   Video: false,
   Viewed: false,
+  Fave: false,
   Date: types.maybeNull(types.string), //types.Date
   MatchCount: types.maybeNull(types.number),
   MemberID: types.maybeNull(types.number),
@@ -15,7 +16,7 @@ const FeedModel = types.model({
   //Thumbnail: types.maybeNull(types.string),
   MemberName: types.maybeNull(types.string),
   UniversityAbbr: types.maybeNull(types.string),
-  AvatarURL: types.optional(types.string, "")
+  AvatarURI: types.optional(types.string, "")
   //Ищу соседа
 });
 
@@ -25,7 +26,7 @@ export const FeedStore = types
     RestrictUniversity: false, // Выдавать в ленте студентов только из моего университета
     Gender: types.optional(types.string, "any"), // Выдавать в ленте анкеты только определенного пола (m/f/any)
     Feed: types.array(FeedModel),
-    MyFeedURL: types.maybeNull(types.string),
+    MyFeedURI: types.maybeNull(types.string),
     MyFeedVideo: false,
     MyFeedDate: types.maybeNull(types.string), //types.Date
     FeedIndexPrevious: types.optional(types.number, 0),
@@ -101,7 +102,7 @@ export const FeedStore = types
       try {
         const response = yield api.get("/feed");
 
-        //console.log(JSON.stringify(response.data));
+        console.log(JSON.stringify(response.data));
 
         if (response.ok && response.data.status == true) {
           if (response.data.result == null) {
@@ -120,11 +121,12 @@ export const FeedStore = types
         console.log("error", JSON.stringify(error));
       }
     }),
-    Report: flow(function*(reason) {
+    Report: flow(function*(reason, type) {
       try {
         const response = yield api.post("/report", {
-          FeedID: self.FeedCurrent.FeedID,
-          Reason: reason
+          FeedID: self.FeedCurrent.FeedID, //SubjectID
+          Reason: reason,
+          Type: type
         });
 
         if (response.ok && response.data.status == true) {
@@ -133,6 +135,25 @@ export const FeedStore = types
             "Ваша жалоба успешно отправлена",
             "success"
           );
+          return true;
+        }
+
+        return false;
+      } catch (error) {
+        console.log("error", JSON.stringify(error));
+        return false;
+      }
+    }),
+    Fave: flow(function*() {
+      try {
+        const response = yield api.post("/feed/fave", {
+          FeedID: self.FeedCurrent.FeedID,
+          Fave: !self.FeedCurrent.Fave
+        });
+        console.log(JSON.stringify(response.data));
+
+        if (response.ok && response.data.status == true) {
+          self.FeedCurrent.Fave = !self.FeedCurrent.Fave;
           return true;
         }
 

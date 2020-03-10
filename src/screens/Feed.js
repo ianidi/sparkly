@@ -96,9 +96,9 @@ class FeedScreen extends React.Component {
     super(props);
 
     this.state = {
-      likeAnimationProgress: new RNAnimated.Value(0),
-      likeAnimationVisible: false,
-      tempLike: false
+      faveAnimationProgress: new RNAnimated.Value(0),
+      faveAnimationVisible: false,
+      loadingFave: false
     };
 
     doubleTapRef = React.createRef();
@@ -207,33 +207,44 @@ class FeedScreen extends React.Component {
     this.props.feed.setIndexes();
   };
 
-  like = () => {
-    this.playLikeAnimation();
-  };
+  fave = async () => {
+    if (this.state.loadingFave) {
+      return;
+    }
 
-  likeByDoubleTap = event => {
-    if (event.nativeEvent.state === State.ACTIVE) {
-      this.like();
+    this.setState({ loadingFave: true });
+
+    const result = await this.props.feed.Fave();
+
+    this.setState({ loadingFave: false });
+
+    if (result && this.props.feed.FeedCurrent.Fave) {
+      this.playFaveAnimation();
     }
   };
 
-  playLikeAnimation = () => {
-    this.setState({ tempLike: true });
-    if (this.state.likeAnimationVisible) {
+  faveByDoubleTap = event => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+      this.fave();
+    }
+  };
+
+  playFaveAnimation = () => {
+    if (this.state.faveAnimationVisible) {
       return;
     }
 
     this.setState(s => ({
       ...s,
-      likeAnimationProgress: new RNAnimated.Value(0),
-      likeAnimationVisible: true
+      faveAnimationProgress: new RNAnimated.Value(0),
+      faveAnimationVisible: true
     }));
 
-    RNAnimated.timing(this.state.likeAnimationProgress, {
+    RNAnimated.timing(this.state.faveAnimationProgress, {
       toValue: 1,
       duration: 2000,
       easing: RNEasing.linear
-    }).start(() => this.setState(s => ({ ...s, likeAnimationVisible: false })));
+    }).start(() => this.setState(s => ({ ...s, faveAnimationVisible: false })));
   };
 
   componentDidMount = () => {
@@ -333,7 +344,7 @@ class FeedScreen extends React.Component {
           </TouchableOpacity>
         </CloseContainer>
 
-        {this.state.likeAnimationVisible && (
+        {this.state.faveAnimationVisible && (
           <View
             style={{
               position: "absolute",
@@ -348,18 +359,18 @@ class FeedScreen extends React.Component {
             pointerEvents={"none"}
           >
             <LottieView
-              source={images.LottieLike}
+              source={images.LottieFave}
               autoPlay
               style={{
                 width: width * 0.7
               }}
-              progress={this.state.likeAnimationProgress}
+              progress={this.state.faveAnimationProgress}
             />
           </View>
         )}
 
         <TouchableOpacity
-          onPress={() => this.like()}
+          onPress={() => this.fave()}
           activeOpacity={0.9}
           style={{
             position: "absolute",
@@ -368,13 +379,15 @@ class FeedScreen extends React.Component {
             right: scale(29)
           }}
         >
-          <LikeContainer
+          <FaveContainer
             style={{
-              backgroundColor: this.state.tempLike ? "#f5cfd0" : "#fff"
+              backgroundColor: this.props.feed.FeedCurrent.Fave
+                ? "#f5cfd0"
+                : "#fff"
             }}
           >
-            <LikeImage source={images.Like} />
-          </LikeContainer>
+            <FaveImage source={images.Fave} />
+          </FaveContainer>
         </TouchableOpacity>
 
         {this.props.feed.FeedSettingsOpen == false && (
@@ -401,12 +414,12 @@ class FeedScreen extends React.Component {
             activeOpacity={0.9}
             hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           >
-            <FeedReportImage source={images.ReportDots} />
+            <ReportImage source={images.ReportDots} />
           </TouchableOpacity>
         </ReportContainer>
 
         <TapGestureHandler
-          onHandlerStateChange={this.likeByDoubleTap}
+          onHandlerStateChange={this.faveByDoubleTap}
           numberOfTaps={2}
         >
           <View
@@ -445,7 +458,7 @@ const ReportContainer = styled.View`
   justify-content: flex-end;
 `;
 
-const FeedReportImage = styled.Image`
+const ReportImage = styled.Image`
   width: ${scale(24) + `px`};
   height: ${scale(24) + `px`};
 `;
@@ -477,7 +490,7 @@ const FilterContainer = styled.View`
   justify-content: space-between;
 `;
 
-const LikeContainer = styled.View`
+const FaveContainer = styled.View`
   padding-top: ${scale(8) + `px`};
   padding-bottom: ${scale(8) + `px`};
   padding-left: ${scale(8) + `px`};
@@ -489,7 +502,7 @@ const LikeContainer = styled.View`
   justify-content: center;
 `;
 
-const LikeImage = styled.Image`
+const FaveImage = styled.Image`
   width: ${scale(30) + `px`};
   height: ${scale(30) + `px`};
 `;
