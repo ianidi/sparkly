@@ -8,19 +8,28 @@ InterestModel = types
   .model({
     InterestID: types.identifierNumber,
     Title: "",
-    Active: false
+    Active: false,
   })
-  .actions(self => ({
+  .actions((self) => ({
     toggle() {
       self.Active = !self.Active;
-    }
+    },
   }));
+
+const MatchModel = types.model({
+  ChatLogin: types.identifier,
+  Name: types.maybeNull(types.string),
+  MatchCount: types.maybeNull(types.number),
+  UniversityAbbr: types.maybeNull(types.string),
+  AvatarURI: types.optional(types.string, ""),
+});
 
 export const MemberStore = types
   .model("MemberStore", {
     loading: false, // Запрос к API в процессе, заблокироваать новые
     demoMode: false, // Пользователь пропустил регистрацию ("не сейчас")
     status: false, // Статус авторизации пользователя
+    InterestsComplete: false, // Заполнены ли интересы
     SignupComplete: false, // Завершена ли регистрация
     Synchronized: true, // Данные синхронизированы с сервером. false - Необходимо перезапросить инфо о пользователе с сервера. Пользователь редактировал свой профиль, но не сохранил настройки.
     Phone: types.maybe(types.string), // Номер мобильного телефона
@@ -37,9 +46,33 @@ export const MemberStore = types
     ImageUploadLocalURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним. Используется для показа превью и загрузки на сервер в ленту
     ImageUploadRestrictUniversity: false, // Переключатель при загрузке контента в ленту: показывать контент только студентам из моего университета
     MemberFeedURI: types.maybeNull(types.string), // Путь к локальному файлу контента, который пользователь отснял последним и успешно загрузил на сервер
-    MemberFeedRestrictUniversity: false // Переключатель при последней успешной загрузке контента в ленту: показывать контент только студентам из моего университета
+    MemberFeedRestrictUniversity: false, // Переключатель при последней успешной загрузке контента в ленту: показывать контент только студентам из моего университета
+    ChatLogin: types.optional(types.string, ""), // XMPP login
+    ChatPassword: types.optional(types.string, ""), // XMPP password
+    Match: types.array(MatchModel),
   })
-  .actions(self => ({
+  .views((self) => ({
+    dialogGet(user) {
+      //const id = user.split("_")[0];
+
+      //console.log("id", id);
+
+      const entry = self.Match.find((el) => el.ChatLogin === user);
+
+      if (!entry) {
+        return {
+          Name: "Пользователь",
+          MatchCount: 0,
+          UniversityAbbr: "",
+          AvatarURI: "",
+          MemberID: 0,
+        };
+      } else {
+        return entry;
+      }
+    },
+  }))
+  .actions((self) => ({
     clear() {
       applySnapshot(self, {});
     },
@@ -49,12 +82,12 @@ export const MemberStore = types
     toggle(fieldName) {
       self[fieldName] = !self[fieldName];
     },
-    RequestCode: flow(function*() {
+    RequestCode: flow(function* () {
       try {
         self.loading = true;
 
         const response = yield api.post("/auth/phone/request", {
-          Phone: self.Phone
+          Phone: self.Phone,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -72,13 +105,13 @@ export const MemberStore = types
         console.log("error", JSON.stringify(error));
       }
     }),
-    Auth: flow(function*(Code) {
+    Auth: flow(function* (Code) {
       try {
         self.loading = true;
 
         const response = yield api.post("/auth/phone", {
           Phone: self.Phone,
-          Code: Code
+          Code: Code,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -98,6 +131,8 @@ export const MemberStore = types
               self.Name = result.Name;
               self.Gender = result.Gender;
               self.Faculty = result.Faculty;
+              self.ChatLogin = result.ChatLogin;
+              self.ChatPassword = result.ChatPassword;
 
               if (result.SignupComplete) {
                 self.UniversityID = result.University[0].UniversityID;
@@ -105,8 +140,12 @@ export const MemberStore = types
                 self.UniversityAbbr = result.University[0].Abbr;
                 self.AvatarURI = result.AvatarURI;
                 self.RoommateSearch = result.RoommateSearch;
+                self.InterestsComplete = result.InterestsComplete;
 
-                if (typeof result?.Feed[0] != "undefined") {
+                if (
+                  typeof result?.Feed != "undefined" &&
+                  result?.Feed != null
+                ) {
                   self.MemberFeedRestrictUniversity =
                     result.Feed[0].RestrictUniversity;
                   self.MemberFeedURI = result.Feed[0].URI;
@@ -130,13 +169,13 @@ export const MemberStore = types
         return false;
       }
     }),
-    NameGender: flow(function*() {
+    NameGender: flow(function* () {
       try {
         self.loading = true;
 
         const response = yield api.post("/profile/NameGender", {
           Name: self.Name,
-          Gender: self.Gender
+          Gender: self.Gender,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -159,12 +198,12 @@ export const MemberStore = types
         console.log("error", JSON.stringify(error));
       }
     }),
-    UniversitySelect: flow(function*() {
+    UniversitySelect: flow(function* () {
       try {
         self.loading = true;
 
         const response = yield api.post("/profile/university/select", {
-          UniversityID: self.UniversityID
+          UniversityID: self.UniversityID,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -185,12 +224,12 @@ export const MemberStore = types
         console.log("error", JSON.stringify(error));
       }
     }),
-    FacultySelect: flow(function*() {
+    FacultySelect: flow(function* () {
       try {
         self.loading = true;
 
         const response = yield api.post("/profile/faculty", {
-          Faculty: self.Faculty
+          Faculty: self.Faculty,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -211,12 +250,12 @@ export const MemberStore = types
         console.log("error", JSON.stringify(error));
       }
     }),
-    RoommateSearchToggle: flow(function*(value) {
+    RoommateSearchToggle: flow(function* (value) {
       try {
         self.loading = true;
 
         const response = yield api.post("/profile/RoommateSearch", {
-          RoommateSearch: value
+          RoommateSearch: value,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -231,7 +270,7 @@ export const MemberStore = types
         console.log("error", JSON.stringify(error));
       }
     }),
-    DeactivateAccount: flow(function*() {
+    DeactivateAccount: flow(function* () {
       try {
         self.loading = true;
 
@@ -250,13 +289,13 @@ export const MemberStore = types
         return false;
       }
     }),
-    InterestsUpdate: flow(function*(category, value) {
+    InterestsUpdate: flow(function* (category, value) {
       try {
         self.loading = true;
 
         const response = yield api.post("/profile/interests", {
           Category: category,
-          Interests: value
+          Interests: value,
         });
         console.log(JSON.stringify(response));
         self.loading = false;
@@ -272,5 +311,24 @@ export const MemberStore = types
         console.log("error", JSON.stringify(error));
         return false;
       }
-    })
+    }),
+    MatchGet: flow(function* () {
+      try {
+        const response = yield api.get("/match");
+
+        console.log("match", JSON.stringify(response));
+
+        if (response.ok && response.data.status == true) {
+          if (response.data.result.length > 0) {
+            applySnapshot(self.Match, response.data.result);
+            return true;
+          }
+        }
+
+        return false;
+      } catch (error) {
+        console.log("error", JSON.stringify(error));
+        return false;
+      }
+    }),
   }));

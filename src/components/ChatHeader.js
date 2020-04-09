@@ -1,18 +1,18 @@
 import * as React from "react";
+import { inject, observer } from "mobx-react";
 import { Dimensions, TouchableOpacity, Alert } from "react-native";
 import * as NavigationService from "../service/Navigation";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import { connectActionSheet } from "@expo/react-native-action-sheet";
-import {
-  getStatusBarHeight,
-  getBottomSpace
-} from "react-native-iphone-x-helper";
 import images from "../constants/images";
 import ReportChatModal from "./Modal/ReportChat";
 
 const { width, height } = Dimensions.get("window");
 
+@inject("main")
+@inject("member")
+@observer
 class ChatHeader extends React.Component {
   arrowBackPress = () => {
     NavigationService.goBack();
@@ -27,9 +27,9 @@ class ChatHeader extends React.Component {
       {
         options,
         cancelButtonIndex,
-        destructiveButtonIndex
+        destructiveButtonIndex,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex == 0) {
           this.openReportChatModal();
         } else if (buttonIndex == 1) {
@@ -48,10 +48,12 @@ class ChatHeader extends React.Component {
   };
 
   render() {
+    const info = this.props.member.dialogGet(this.props.name);
+
     return (
       <>
         <ReportChatModal
-          ref={el => {
+          ref={(el) => {
             this.reportChatModal = el;
           }}
         />
@@ -63,38 +65,52 @@ class ChatHeader extends React.Component {
                 activeOpacity={0.9}
                 onPress={this.arrowBackPress}
                 style={{
-                  marginRight: scale(30)
+                  marginRight: scale(30),
                 }}
                 hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
               >
                 <ArrowBack source={images.AuthArrowBack} />
               </TouchableOpacity>
-              <AvatarContainer>
-                <AvatarImage source={images.Avatar_temp} />
-              </AvatarContainer>
-              {true && (
-                <MatchContainer
+              {info["AvatarURI"] != null && info["AvatarURI"] != "" ? (
+                <AvatarContainer>
+                  <AvatarImage source={{ uri: info["AvatarURI"] }} />
+                </AvatarContainer>
+              ) : (
+                <MemberCircle
                   style={{
-                    backgroundColor: "#984446"
+                    borderWidth: this.props.member.RoommateSearch
+                      ? scale(2)
+                      : 0,
+                    borderColor: "#FDE300",
                   }}
                 >
-                  <MatchStarImage source={images.MatchStar} />
-                </MatchContainer>
+                  <MemberImage source={images.Member} />
+                </MemberCircle>
               )}
-              {true && (
+              {info["MatchCount"] > 0 ? (
                 <MatchContainer
                   style={{
-                    backgroundColor: "#9499A7"
+                    backgroundColor: "#984446",
                   }}
                 >
-                  <MatchText>?</MatchText>
+                  <MatchText style={{ color: "#fff" }}>
+                    {info["MatchCount"]}
+                  </MatchText>
+                </MatchContainer>
+              ) : (
+                <MatchContainer
+                  style={{
+                    backgroundColor: "#9499A7",
+                  }}
+                >
+                  <MatchText style={{ color: "#252e48" }}>?</MatchText>
                 </MatchContainer>
               )}
               <UserContainer>
                 <UserTitleContainer>
-                  <UserTitle>Алина</UserTitle>
+                  <UserTitle>{info["Name"]}</UserTitle>
                 </UserTitleContainer>
-                <UserCaption>мгимо</UserCaption>
+                <UserCaption>{info["UniversityAbbr"]}</UserCaption>
               </UserContainer>
             </TopStartContainer>
 
@@ -117,6 +133,20 @@ class ChatHeader extends React.Component {
 
 export default connectActionSheet(ChatHeader);
 
+const MemberCircle = styled.View`
+  width: ${scale(40) + `px`};
+  height: ${scale(40) + `px`};
+  border-radius: 100px;
+  background: #f0f0f0;
+  align-items: center;
+  justify-content: center;
+`;
+
+const MemberImage = styled.Image`
+  width: ${scale(24) + `px`};
+  height: ${scale(24) + `px`};
+`;
+
 const ReportContainer = styled.View`
   flex-direction: row;
   align-items: center;
@@ -128,17 +158,16 @@ const ReportImage = styled.Image`
   height: ${scale(4) + `px`};
 `;
 
-const Spacing = styled.View`
-  height: ${verticalScale(34) + scale(29) + `px`};
-`;
+const Spacing = styled.View``;
+//height: ${verticalScale(34) + scale(29) + `px`};
 
 const Container = styled.View`
-  position: absolute;
-  top: ${getStatusBarHeight() + `px`};
   width: ${width + `px`};
   background: #fff;
   z-index: 2000;
 `;
+//position: absolute;
+//top: ${getStatusBarHeight() + `px`};
 
 const TopContainer = styled.View`
   width: ${width - scale(40) + `px`};

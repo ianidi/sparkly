@@ -9,22 +9,25 @@ import {
 import { scale, verticalScale } from "react-native-size-matters";
 
 import Header from "./components/Header";
-import OnboardingScreen from "./screens/Onboarding";
-import AuthScreen from "./screens/Auth/Auth";
-import AuthSMSCodeScreen from "./screens/Auth/SMSCode";
-import NameGenderScreen from "./screens/Auth/NameGender";
-import IntroScreen from "./screens/Auth/Intro";
-import UniversityScreen from "./screens/Auth/University";
-import FacultyScreen from "./screens/Auth/Faculty";
-import FeedScreen from "./screens/Feed";
-import FeedMyScreen from "./screens/FeedMy";
-import CameraScreen from "./screens/Camera";
-import HomeScreen from "./screens/Home";
-import ProfileScreen from "./screens/Profile";
-import SettingsScreen from "./screens/Settings";
-import MessagesScreen from "./screens/Messages";
-import ChatScreen from "./screens/Chat";
-import InterestsScreen from "./screens/Interests";
+import Onboarding from "./screens/Onboarding";
+import Auth from "./screens/Auth/Auth";
+import AuthSMSCode from "./screens/Auth/SMSCode";
+import NameGender from "./screens/Auth/NameGender";
+import Intro from "./screens/Auth/Intro";
+import University from "./screens/Auth/University";
+import Faculty from "./screens/Auth/Faculty";
+import Feed from "./screens/Feed";
+import FeedMy from "./screens/FeedMy";
+import Camera from "./screens/Camera";
+import Home from "./screens/Home";
+import Profile from "./screens/Profile";
+import Settings from "./screens/Settings";
+import Dialogs from "./screens/Dialogs";
+import Chat from "./screens/Chat";
+import Interests from "./screens/Interests";
+//import Dialogs from "./chat/screens/Dialogs";
+//import Chat from "./chat/screens/Chat";
+//import Dialogs from "./chat/screens/auth/index.js";
 
 const Stack = createStackNavigator();
 
@@ -69,7 +72,7 @@ export default class Navigation extends React.Component {
             {this.props.main.OnboadringComplete == false && (
               <Stack.Screen
                 name="Onboarding"
-                component={OnboardingScreen}
+                component={Onboarding}
                 options={{
                   headerTitle: null,
                   headerShown: false
@@ -78,7 +81,7 @@ export default class Navigation extends React.Component {
             )}
             <Stack.Screen
               name="Auth"
-              component={AuthScreen}
+              component={Auth}
               options={{
                 headerTitle: null,
                 headerShown: false
@@ -86,7 +89,7 @@ export default class Navigation extends React.Component {
             />
             <Stack.Screen
               name="AuthSMSCode"
-              component={AuthSMSCodeScreen}
+              component={AuthSMSCode}
               options={{
                 headerTitle: null,
                 headerShown: false
@@ -100,7 +103,7 @@ export default class Navigation extends React.Component {
               <>
                 <Stack.Screen
                   name="NameGender"
-                  component={NameGenderScreen}
+                  component={NameGender}
                   options={{
                     headerTitle: null,
                     headerShown: false
@@ -108,7 +111,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="University"
-                  component={UniversityScreen}
+                  component={University}
                   options={{
                     headerTitle: null,
                     headerShown: false
@@ -116,7 +119,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Faculty"
-                  component={FacultyScreen}
+                  component={Faculty}
                   options={{
                     headerTitle: null,
                     headerShown: false
@@ -124,7 +127,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Intro"
-                  component={IntroScreen}
+                  component={Intro}
                   options={{
                     headerTitle: null,
                     headerShown: false
@@ -135,7 +138,7 @@ export default class Navigation extends React.Component {
               <>
                 <Stack.Screen
                   name="Home"
-                  component={HomeScreen}
+                  component={Home}
                   options={{
                     headerTitle: null,
                     headerShown: false
@@ -143,7 +146,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Profile"
-                  component={ProfileScreen}
+                  component={Profile}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -154,7 +157,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Settings"
-                  component={SettingsScreen}
+                  component={Settings}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -165,16 +168,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Camera"
-                  component={CameraScreen}
-                  options={{
-                    headerTitle: null,
-                    headerShown: false,
-                    ...TransitionPresets.FadeFromBottomAndroid
-                  }}
-                />
-                <Stack.Screen
-                  name="Messages"
-                  component={MessagesScreen}
+                  component={Camera}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -183,7 +177,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Chat"
-                  component={ChatScreen}
+                  component={Chat}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -192,7 +186,16 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Interests"
-                  component={InterestsScreen}
+                  component={Interests}
+                  options={{
+                    headerTitle: null,
+                    headerShown: false,
+                    ...TransitionPresets.FadeFromBottomAndroid
+                  }}
+                />
+                <Stack.Screen
+                  name="Dialogs"
+                  component={Dialogs}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -201,7 +204,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="Feed"
-                  component={FeedScreen}
+                  component={Feed}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -210,7 +213,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="FeedMy"
-                  component={FeedMyScreen}
+                  component={FeedMy}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -219,7 +222,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="EditNameGender"
-                  component={NameGenderScreen}
+                  component={NameGender}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -228,7 +231,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="EditUniversity"
-                  component={UniversityScreen}
+                  component={University}
                   options={{
                     headerTitle: null,
                     headerShown: false,
@@ -237,7 +240,7 @@ export default class Navigation extends React.Component {
                 />
                 <Stack.Screen
                   name="EditFaculty"
-                  component={FacultyScreen}
+                  component={Faculty}
                   options={{
                     headerTitle: null,
                     headerShown: false,

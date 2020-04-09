@@ -2,15 +2,14 @@ import React from "react";
 import { inject, observer } from "mobx-react";
 import { TouchableOpacity, Dimensions } from "react-native";
 import * as NavigationService from "../../service/Navigation";
-import { getBottomSpace } from "react-native-iphone-x-helper";
+import { getStatusBarHeight } from "react-native-iphone-x-helper";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
-import FeedCircles from "../FeedCircles";
 import Tooltip from "./Tooltip";
 
 const { width, height } = Dimensions.get("window");
 
-@inject("feed")
+@inject("main")
 @observer
 export default class FeedSettingsTooltipModal extends React.PureComponent {
   close = () => {
@@ -18,8 +17,9 @@ export default class FeedSettingsTooltipModal extends React.PureComponent {
   };
 
   complete = () => {
-    this.props.feed.set("FeedSettingsOpen", true);
-    this.props.modal.openModal("FeedSettings");
+    this.props.main.set("ModalFeedInterests", true);
+    this.props.modal.closeModal();
+    NavigationService.navigate("Interests");
   };
 
   render() {
@@ -34,17 +34,21 @@ export default class FeedSettingsTooltipModal extends React.PureComponent {
         </TouchableOpacity>
         <BottomContainer>
           <Tooltip
-            title="фильтр"
-            caption="в фильтрах ты можешь выбрать подходящие для себя настройки, чтобы поиск людей стал ещё интереснее"
-            button="выбрать фильтры"
+            title="интересы"
+            caption="заполни свои интересы и мы сможем каждое утро делать тебе подборку из самых подходящих для тебя людей"
+            button="заполнить интересы"
             onComplete={this.complete}
           />
 
-          <ButtonContainer>
-            <Button>
-              <FeedCircles />
-            </Button>
-          </ButtonContainer>
+          <TouchableOpacity
+            onPress={this.close}
+            activeOpacity={0.9}
+            hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
+            <ButtonContainer>
+              <Dismiss>пропустить</Dismiss>
+            </ButtonContainer>
+          </TouchableOpacity>
         </BottomContainer>
       </>
     );
@@ -57,7 +61,7 @@ const BottomContainer = styled.View`
   margin-right: ${scale(15) + `px`};
   position: absolute;
   z-index: 11000;
-  bottom: ${getBottomSpace() + verticalScale(40) + `px`};
+  top: ${getStatusBarHeight() + verticalScale(80) + `px`};
 `;
 
 const ModalContainer = styled.View`
@@ -75,14 +79,9 @@ const ButtonContainer = styled.View`
   justify-content: center;
 `;
 
-const Button = styled.View`
-  padding-top: ${scale(8) + `px`};
-  padding-bottom: ${scale(8) + `px`};
-  padding-left: ${scale(8) + `px`};
-  padding-right: ${scale(8) + `px`};
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: 10px;
+const Dismiss = styled.Text`
+  font-size: ${scale(16) + `px`};
+  line-height: ${scale(16) + `px`};
+  font-family: "IBMPlexMono";
+  color: #fff;
 `;

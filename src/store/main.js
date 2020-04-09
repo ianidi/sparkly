@@ -6,7 +6,9 @@ export const MainStore = types
     ChatNotificationsEnabled: true, // Уведомления о новых сообщениях в чате включены
     ModalFeedOnboarding: false, // Была ли показана подсказка с жестами управления лентой
     ModalFeedSettingsTooltip: false, // Была ли показана подсказка с настройками фильтрации ленты
-    ModalCameraContentTooltip: false // Была ли показана подсказка с правилами относительно запрещенного контента в камере
+    ModalCameraContentTooltip: false, // Была ли показана подсказка с правилами относительно запрещенного контента в камере
+    ModalFeedInterests: false, // Была ли показана подсказка "заполни интересы"
+    ModalFeedFave: false // Была ли показана подсказка "твой лайк уже в пути"
   })
   .actions(self => ({
     clear() {

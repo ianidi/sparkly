@@ -1,347 +1,177 @@
 export let hobby = [
   {
-    InterestID: 1,
+    InterestTitle: "cars",
     Title: "Автомобили",
     Selected: false
   },
   {
-    InterestID: 2,
-    Title: "Азартные игры",
+    InterestTitle: "moto",
+    Title: "Мототехника",
     Selected: false
   },
   {
-    InterestID: 3,
-    Title: "Блоггерство",
-    Selected: false
-  },
-  {
-    InterestID: 4,
-    Title: "Вечеринки",
-    Selected: false
-  },
-  {
-    InterestID: 5,
+    InterestTitle: "videogames",
     Title: "Видеоигры",
     Selected: false
   },
   {
-    InterestID: 6,
-    Title: "Дизайн и графика",
-    Selected: false
-  },
-  {
-    InterestID: 7,
-    Title: "Живопись",
-    Selected: false
-  },
-  {
-    InterestID: 8,
-    Title: "Игра на музыкальных инструментах",
-    Selected: false
-  },
-  {
-    InterestID: 9,
-    Title: "Иностранные языки",
-    Selected: false
-  },
-  {
-    InterestID: 10,
-    Title: "Интернет и технологии",
-    Selected: false
-  },
-  {
-    InterestID: 11,
-    Title: "Картинг",
-    Selected: false
-  },
-  {
-    InterestID: 12,
-    Title: "Квадроциклы",
-    Selected: false
-  },
-  {
-    InterestID: 13,
-    Title: "Концерты",
-    Selected: false
-  },
-  {
-    InterestID: 14,
-    Title: "Кулинария",
-    Selected: false
-  },
-  {
-    InterestID: 15,
-    Title: "Литература",
-    Selected: false
-  },
-  {
-    InterestID: 16,
+    InterestTitle: "fashion",
     Title: "Мода",
     Selected: false
   },
   {
-    InterestID: 17,
-    Title: "Мотоциклы",
-    Selected: false
-  },
-  {
-    InterestID: 18,
-    Title: "Музеи и выставки",
-    Selected: false
-  },
-  {
-    InterestID: 19,
-    Title: "Музыка",
-    Selected: false
-  },
-  {
-    InterestID: 20,
-    Title: "Настольные игры",
-    Selected: false
-  },
-  {
-    InterestID: 21,
-    Title: "Охота",
-    Selected: false
-  },
-  {
-    InterestID: 22,
-    Title: "Пение",
-    Selected: false
-  },
-  {
-    InterestID: 23,
-    Title: "Писательство",
-    Selected: false
-  },
-  {
-    InterestID: 24,
-    Title: "Политика",
-    Selected: false
-  },
-  {
-    InterestID: 25,
+    InterestTitle: "travel",
     Title: "Путешествия",
     Selected: false
   },
   {
-    InterestID: 26,
-    Title: "Рисование",
-    Selected: false
-  },
-  {
-    InterestID: 27,
-    Title: "Робототехника",
-    Selected: false
-  },
-  {
-    InterestID: 28,
-    Title: "Рыбалка",
-    Selected: false
-  },
-  {
-    InterestID: 29,
-    Title: "Стрельба",
-    Selected: false
-  },
-  {
-    InterestID: 30,
-    Title: "Танцы",
-    Selected: false
-  },
-  {
-    InterestID: 31,
+    InterestTitle: "creativity",
     Title: "Творчество",
     Selected: false
   },
   {
-    InterestID: 32,
-    Title: "Театр",
+    InterestTitle: "theatre",
+    Title: "Театр и кино",
     Selected: false
   },
   {
-    InterestID: 33,
+    InterestTitle: "languages",
+    Title: "Иностранные языки",
+    Selected: false
+  },
+  {
+    InterestTitle: "cooking",
+    Title: "Кулинария",
+    Selected: false
+  },
+  {
+    InterestTitle: "painting",
+    Title: "Рисование",
+    Selected: false
+  },
+  {
+    InterestTitle: "photography",
     Title: "Фотография",
     Selected: false
   },
   {
-    InterestID: 34,
-    Title: "Шитье и вышивание",
+    InterestTitle: "dancing",
+    Title: "Танцы",
     Selected: false
   },
   {
-    InterestID: 35,
-    Title: "Юмор",
+    InterestTitle: "exhibitions",
+    Title: "Музеи и выставки",
     Selected: false
   }
 ];
 
 export let sport = [
   {
-    InterestID: 1,
-    Title: "Автоспорт",
-    Selected: false
-  },
-  {
-    InterestID: 2,
-    Title: "Баскетбол",
-    Selected: false
-  },
-  {
-    InterestID: 3,
-    Title: "Бег",
-    Selected: false
-  },
-  {
-    InterestID: 4,
-    Title: "Бокс",
-    Selected: false
-  },
-  {
-    InterestID: 5,
-    Title: "Боевые искусства",
-    Selected: false
-  },
-  {
-    InterestID: 6,
-    Title: "Водный спорт",
-    Selected: false
-  },
-  {
-    InterestID: 7,
-    Title: "Волейбол",
-    Selected: false
-  },
-  {
-    InterestID: 8,
-    Title: "Здоровый образ жизни",
-    Selected: false
-  },
-  {
-    InterestID: 9,
-    Title: "Зимние виды спорта",
-    Selected: false
-  },
-  {
-    InterestID: 10,
-    Title: "Киберспорт",
-    Selected: false
-  },
-  {
-    InterestID: 11,
-    Title: "Легкая атлетика",
-    Selected: false
-  },
-  {
-    InterestID: 12,
-    Title: "Летние виды спорта",
-    Selected: false
-  },
-  {
-    InterestID: 13,
-    Title: "Лыжи",
-    Selected: false
-  },
-  {
-    InterestID: 14,
-    Title: "Лыжные гонки",
-    Selected: false
-  },
-  {
-    InterestID: 15,
-    Title: "Мотоспорт",
-    Selected: false
-  },
-  {
-    InterestID: 16,
-    Title: "Настольные игры",
-    Selected: false
-  },
-  {
-    InterestID: 17,
-    Title: "Ролики",
-    Selected: false
-  },
-  {
-    InterestID: 18,
-    Title: "Сноуборд",
-    Selected: false
-  },
-  {
-    InterestID: 19,
-    Title: "Теннис",
-    Selected: false
-  },
-  {
-    InterestID: 20,
-    Title: "Триатлон",
-    Selected: false
-  },
-  {
-    InterestID: 21,
-    Title: "Университетский спорт",
-    Selected: false
-  },
-  {
-    InterestID: 22,
-    Title: "Фигурное катание",
-    Selected: false
-  },
-  {
-    InterestID: 23,
-    Title: "Фитнес",
-    Selected: false
-  },
-  {
-    InterestID: 24,
+    InterestTitle: "football",
     Title: "Футбол",
     Selected: false
   },
   {
-    InterestID: 25,
+    InterestTitle: "basketball",
+    Title: "Баскетбол",
+    Selected: false
+  },
+  {
+    InterestTitle: "running",
+    Title: "Бег",
+    Selected: false
+  },
+  {
+    InterestTitle: "hockey",
     Title: "Хоккей",
     Selected: false
   },
   {
-    InterestID: 26,
-    Title: "Шахматы",
+    InterestTitle: "fighting",
+    Title: "Боевые искусства",
     Selected: false
   },
   {
-    InterestID: 27,
-    Title: "Экстремальный спорт",
+    InterestTitle: "tennis",
+    Title: "Теннис",
+    Selected: false
+  },
+  {
+    InterestTitle: "volleyball",
+    Title: "Волейбол",
+    Selected: false
+  },
+  {
+    InterestTitle: "fitness",
+    Title: "Фитнес",
+    Selected: false
+  },
+  {
+    InterestTitle: "snowboarding",
+    Title: "Сноуборд",
+    Selected: false
+  },
+  {
+    InterestTitle: "aquatics",
+    Title: "Водный спорт",
+    Selected: false
+  },
+  {
+    InterestTitle: "athletics",
+    Title: "Легкая атлетика",
+    Selected: false
+  },
+  {
+    InterestTitle: "motorsport",
+    Title: "Автоспорт",
+    Selected: false
+  },
+  {
+    InterestTitle: "ski",
+    Title: "Лыжи",
+    Selected: false
+  },
+  {
+    InterestTitle: "table games",
+    Title: "Настольные игры",
+    Selected: false
+  },
+  {
+    InterestTitle: "hackathons",
+    Title: "Хакатоны",
     Selected: false
   }
 ];
 
 export let people = [
   {
-    InterestID: 1,
+    InterestTitle: "wisdom",
     Title: "Ум и креативность",
     Selected: false
   },
   {
-    InterestID: 2,
+    InterestTitle: "kindness",
     Title: "Доброта и честность",
     Selected: false
   },
   {
-    InterestID: 3,
+    InterestTitle: "beauty",
     Title: "Красота и здоровье",
     Selected: false
   },
   {
-    InterestID: 4,
+    InterestTitle: "power",
     Title: "Власть и богатство",
     Selected: false
   },
   {
-    InterestID: 5,
+    InterestTitle: "courage",
     Title: "Смелость и упорство",
     Selected: false
   },
   {
-    InterestID: 6,
+    InterestTitle: "humor",
     Title: "Юмор и жизнелюбие",
     Selected: false
   }
@@ -349,42 +179,42 @@ export let people = [
 
 export let goals = [
   {
-    InterestID: 1,
+    InterestTitle: "family",
     Title: "Семья и дети",
     Selected: false
   },
   {
-    InterestID: 2,
+    InterestTitle: "career",
     Title: "Карьера и деньги",
     Selected: false
   },
   {
-    InterestID: 3,
+    InterestTitle: "fun",
     Title: "Развлечения и отдых",
     Selected: false
   },
   {
-    InterestID: 4,
+    InterestTitle: "science",
     Title: "Наука и исследования",
     Selected: false
   },
   {
-    InterestID: 5,
+    InterestTitle: "perfection",
     Title: "Совершенствование мира",
     Selected: false
   },
   {
-    InterestID: 6,
+    InterestTitle: "self-development",
     Title: "Саморазвитие",
     Selected: false
   },
   {
-    InterestID: 7,
+    InterestTitle: "beauty",
     Title: "Красота и искусство",
     Selected: false
   },
   {
-    InterestID: 8,
+    InterestTitle: "power",
     Title: "Слава и влияние",
     Selected: false
   }
@@ -392,349 +222,189 @@ export let goals = [
 
 export let cinema = [
   {
-    InterestID: 1,
-    Title: "аниме",
+    InterestTitle: "soap opera",
+    Title: "сериалы",
     Selected: false
   },
   {
-    InterestID: 2,
-    Title: "биографический",
+    InterestTitle: "cartoons",
+    Title: "мультфильмы",
     Selected: false
   },
   {
-    InterestID: 3,
-    Title: "боевик",
-    Selected: false
-  },
-  {
-    InterestID: 4,
-    Title: "вестерн",
-    Selected: false
-  },
-  {
-    InterestID: 5,
-    Title: "военный",
-    Selected: false
-  },
-  {
-    InterestID: 6,
-    Title: "детектив",
-    Selected: false
-  },
-  {
-    InterestID: 7,
-    Title: "детский",
-    Selected: false
-  },
-  {
-    InterestID: 8,
-    Title: "документальный",
-    Selected: false
-  },
-  {
-    InterestID: 9,
-    Title: "драма",
-    Selected: false
-  },
-  {
-    InterestID: 10,
-    Title: "исторический",
-    Selected: false
-  },
-  {
-    InterestID: 11,
-    Title: "кинокомикс",
-    Selected: false
-  },
-  {
-    InterestID: 12,
-    Title: "комедия",
-    Selected: false
-  },
-  {
-    InterestID: 13,
-    Title: "концерт",
-    Selected: false
-  },
-  {
-    InterestID: 14,
-    Title: "короткометражный",
-    Selected: false
-  },
-  {
-    InterestID: 15,
-    Title: "криминал",
-    Selected: false
-  },
-  {
-    InterestID: 16,
-    Title: "мелодрама",
-    Selected: false
-  },
-  {
-    InterestID: 17,
-    Title: "мистика",
-    Selected: false
-  },
-  {
-    InterestID: 18,
-    Title: "музыка",
-    Selected: false
-  },
-  {
-    InterestID: 19,
-    Title: "мультфильм",
-    Selected: false
-  },
-  {
-    InterestID: 20,
-    Title: "мюзикл",
-    Selected: false
-  },
-  {
-    InterestID: 21,
-    Title: "научный",
-    Selected: false
-  },
-  {
-    InterestID: 22,
-    Title: "приключения",
-    Selected: false
-  },
-  {
-    InterestID: 23,
-    Title: "реалити-шоу",
-    Selected: false
-  },
-  {
-    InterestID: 24,
-    Title: "семейный",
-    Selected: false
-  },
-  {
-    InterestID: 25,
-    Title: "спорт",
-    Selected: false
-  },
-  {
-    InterestID: 26,
-    Title: "ток-шоу",
-    Selected: false
-  },
-  {
-    InterestID: 27,
-    Title: "триллер",
-    Selected: false
-  },
-  {
-    InterestID: 28,
+    InterestTitle: "horror",
     Title: "ужасы",
     Selected: false
   },
   {
-    InterestID: 29,
-    Title: "фантастика",
+    InterestTitle: "thriller",
+    Title: "триллер",
     Selected: false
   },
   {
-    InterestID: 30,
-    Title: "фильм-нуар",
+    InterestTitle: "drama",
+    Title: "драма",
     Selected: false
   },
   {
-    InterestID: 31,
+    InterestTitle: "comedy",
+    Title: "комедия",
+    Selected: false
+  },
+  {
+    InterestTitle: "fantasy",
     Title: "фэнтези",
+    Selected: false
+  },
+  {
+    InterestTitle: "action",
+    Title: "боевик",
+    Selected: false
+  },
+  {
+    InterestTitle: "documentary",
+    Title: "документальный",
+    Selected: false
+  },
+  {
+    InterestTitle: "melodrama",
+    Title: "мелодрама",
+    Selected: false
+  },
+  {
+    InterestTitle: "anime",
+    Title: "аниме",
     Selected: false
   }
 ];
 
 export let food = [
   {
-    InterestID: 1,
+    InterestTitle: "italian",
     Title: "Итальянская",
     Selected: false
   },
   {
-    InterestID: 2,
-    Title: "Китайская",
-    Selected: false
-  },
-  {
-    InterestID: 3,
+    InterestTitle: "japanese",
     Title: "Японская",
     Selected: false
   },
   {
-    InterestID: 4,
-    Title: "Тайская",
-    Selected: false
-  },
-  {
-    InterestID: 5,
-    Title: "Французская",
-    Selected: false
-  },
-  {
-    InterestID: 6,
-    Title: "Испанская",
-    Selected: false
-  },
-  {
-    InterestID: 7,
+    InterestTitle: "russian",
     Title: "Русская",
     Selected: false
   },
   {
-    InterestID: 8,
-    Title: "Украинская",
-    Selected: false
-  },
-  {
-    InterestID: 9,
+    InterestTitle: "american",
     Title: "Американская",
     Selected: false
   },
   {
-    InterestID: 10,
-    Title: "Мексиканская",
-    Selected: false
-  },
-  {
-    InterestID: 11,
+    InterestTitle: "indian",
     Title: "Индийская",
     Selected: false
   },
   {
-    InterestID: 12,
+    InterestTitle: "serbian",
+    Title: "Сербская",
+    Selected: false
+  },
+  {
+    InterestTitle: "spanish",
+    Title: "Испанская",
+    Selected: false
+  },
+  {
+    InterestTitle: "french",
+    Title: "Французская",
+    Selected: false
+  },
+  {
+    InterestTitle: "turkish",
     Title: "Турецкая",
     Selected: false
   },
   {
-    InterestID: 13,
-    Title: "Корейская",
-    Selected: false
-  },
-  {
-    InterestID: 14,
+    InterestTitle: "greek",
     Title: "Греческая",
     Selected: false
   },
   {
-    InterestID: 15,
-    Title: "Вьетнамская",
-    Selected: false
-  },
-  {
-    InterestID: 16,
-    Title: "Гонконгская",
-    Selected: false
-  },
-  {
-    InterestID: 17,
+    InterestTitle: "german",
     Title: "Немецкая",
     Selected: false
   },
   {
-    InterestID: 18,
-    Title: "Чешская",
+    InterestTitle: "chinese",
+    Title: "Китайская",
     Selected: false
   },
   {
-    InterestID: 19,
-    Title: "Британская",
+    InterestTitle: "thai",
+    Title: "Тайская",
     Selected: false
   }
 ];
 
 export let music = [
   {
-    InterestID: 1,
-    Title: "K-Pop",
+    InterestTitle: "rap",
+    Title: "Rap",
     Selected: false
   },
   {
-    InterestID: 2,
-    Title: "R&B",
+    InterestTitle: "russian rap",
+    Title: "Русский рэп",
     Selected: false
   },
   {
-    InterestID: 3,
-    Title: "Блюз",
-    Selected: false
-  },
-  {
-    InterestID: 4,
-    Title: "Джаз",
-    Selected: false
-  },
-  {
-    InterestID: 5,
-    Title: "Диджей-миксы",
-    Selected: false
-  },
-  {
-    InterestID: 6,
-    Title: "Инди",
-    Selected: false
-  },
-  {
-    InterestID: 7,
-    Title: "Классика рока",
-    Selected: false
-  },
-  {
-    InterestID: 8,
-    Title: "Классическая музыка",
-    Selected: false
-  },
-  {
-    InterestID: 9,
-    Title: "Латиноамериканская музыка",
-    Selected: false
-  },
-  {
-    InterestID: 10,
-    Title: "Метал",
-    Selected: false
-  },
-  {
-    InterestID: 11,
-    Title: "Народная музыка",
-    Selected: false
-  },
-  {
-    InterestID: 12,
+    InterestTitle: "pop",
     Title: "Поп",
     Selected: false
   },
   {
-    InterestID: 13,
+    InterestTitle: "rock",
     Title: "Рок",
     Selected: false
   },
   {
-    InterestID: 14,
-    Title: "Русский шансон",
+    InterestTitle: "classic",
+    Title: "Классическая",
     Selected: false
   },
   {
-    InterestID: 15,
-    Title: "Рэп",
+    InterestTitle: "russian",
+    Title: "Русская",
     Selected: false
   },
   {
-    InterestID: 16,
-    Title: "Танцевальная",
+    InterestTitle: "hardstyle",
+    Title: "Hardstyle",
     Selected: false
   },
   {
-    InterestID: 17,
-    Title: "Хип-хоп",
+    InterestTitle: "trance",
+    Title: "Trance",
     Selected: false
   },
   {
-    InterestID: 18,
-    Title: "Электроника",
+    InterestTitle: "house",
+    Title: "House",
+    Selected: false
+  },
+  {
+    InterestTitle: "dnb",
+    Title: "Drum'n'Bass",
+    Selected: false
+  },
+  {
+    InterestTitle: "hardbass",
+    Title: "Хард басс",
+    Selected: false
+  },
+  {
+    InterestTitle: "90s",
+    Title: "Хиты 90-х",
     Selected: false
   }
 ];

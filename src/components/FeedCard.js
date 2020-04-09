@@ -38,7 +38,9 @@ export default class FeedCard extends React.Component {
                     uri: this.props.feed.FeedCurrent.URI
                   }}
                   style={styles.image}
-                  onLoadEnd={this.props.onLoad}
+                  onLoadEnd={() => {
+                    this.props.onLoad();
+                  }}
                 />
               )}
             {this.props.feed.FeedCurrent.Video &&

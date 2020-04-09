@@ -18,7 +18,8 @@ export default class FeedSettingsModal extends React.PureComponent {
     this.close();
   };
 
-  close = () => {
+  close = async () => {
+    await this.props.feed.InitFeed(false);
     this.props.feed.set("FeedSettingsOpen", false);
     this.props.modal.closeModal();
   };

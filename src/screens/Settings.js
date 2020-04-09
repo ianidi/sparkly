@@ -18,12 +18,12 @@ class Notifications extends React.Component {
       <NotificationsContainer>
         <NotificationsSwitch>
           <Switch
-            ref={ref => {
+            ref={(ref) => {
               this.switch = ref;
             }}
             colorActive="rgb(253, 227, 0)" //rgb(82, 90, 113)
             value={this.props.main.ChatNotificationsEnabled}
-            onChange={value => {
+            onChange={(value) => {
               this.props.main.set("ChatNotificationsEnabled", value);
             }}
           />
@@ -53,7 +53,7 @@ export default class SettingsScreen extends React.Component {
     super(props);
 
     this.state = {
-      inputFocused: true
+      inputFocused: true,
     };
   }
 
@@ -83,12 +83,12 @@ export default class SettingsScreen extends React.Component {
       [
         {
           text: "Отменить",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Выйти",
-          onPress: this.signOut
-        }
+          onPress: this.signOut,
+        },
       ],
       { cancelable: false }
     );
@@ -97,6 +97,8 @@ export default class SettingsScreen extends React.Component {
   signOut = async () => {
     try {
       await AsyncStorage.removeItem("@Api:token");
+      await AsyncStorage.removeItem("CURRENT_USER_SESSION_KEY");
+      await AsyncStorage.removeItem("DEVICE_TOKEN_KEY");
     } catch (e) {
       console.log(e);
       return;
@@ -114,12 +116,12 @@ export default class SettingsScreen extends React.Component {
       [
         {
           text: "Отменить",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Удалить",
-          onPress: this.deactivateAccountPromptSecond
-        }
+          onPress: this.deactivateAccountPromptSecond,
+        },
       ],
       { cancelable: false }
     );
@@ -132,12 +134,12 @@ export default class SettingsScreen extends React.Component {
       [
         {
           text: "Не удалять",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Удалить",
-          onPress: this.deactivateAccount
-        }
+          onPress: this.deactivateAccount,
+        },
       ],
       { cancelable: false }
     );
@@ -159,7 +161,7 @@ export default class SettingsScreen extends React.Component {
           style={{
             position: "absolute",
             top: verticalScale(23),
-            left: scale(19)
+            left: scale(19),
           }}
           hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
         >
@@ -173,7 +175,7 @@ export default class SettingsScreen extends React.Component {
           onPress={this.signOutPrompt}
           activeOpacity={0.9}
           style={{
-            marginTop: scale(50)
+            marginTop: scale(50),
           }}
         >
           <ButtonProfile>
@@ -186,7 +188,7 @@ export default class SettingsScreen extends React.Component {
           activeOpacity={0.9}
           hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           style={{
-            marginTop: verticalScale(60)
+            marginTop: verticalScale(60),
           }}
         >
           <RemoveText>удалить аккаунт</RemoveText>
@@ -202,7 +204,7 @@ export default class SettingsScreen extends React.Component {
           flex: 1,
           backgroundColor: "#fff",
           width: width,
-          paddingRight: scale(16)
+          paddingRight: scale(16),
         }}
       >
         {this.renderSettings()}

@@ -4,13 +4,14 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  BackHandler
+  BackHandler,
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
 import { scale, verticalScale } from "react-native-size-matters";
 import { getStatusBarHeight } from "react-native-iphone-x-helper";
 import * as Progress from "react-native-progress";
+import ProgressBar from "../components/ProgressBar";
 import {
   hobby,
   sport,
@@ -18,7 +19,7 @@ import {
   goals,
   cinema,
   food,
-  music
+  music,
 } from "../constants/interests";
 
 const { width, height } = Dimensions.get("window");
@@ -36,9 +37,16 @@ export default class MessagesScreen extends React.Component {
       interests: hobby,
       showButton: true,
       selected: [],
-      loading: false
+      loading: false,
+      progress: 14,
     };
   }
+
+  increase = (key, value) => {
+    this.setState({
+      [key]: this.state[key] + value,
+    });
+  };
 
   componentDidMount = () => {
     this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
@@ -55,12 +63,12 @@ export default class MessagesScreen extends React.Component {
     this.props.navigation.goBack();
   };
 
-  setInterest = index => {
-    this.setState(prev => {
+  setInterest = (index) => {
+    this.setState((prev) => {
       let copy = [...prev.interests];
       copy[index].Selected = !copy[index].Selected;
       return {
-        interests: [...copy]
+        interests: [...copy],
       };
     });
   };
@@ -72,11 +80,11 @@ export default class MessagesScreen extends React.Component {
 
     this.setState({ loading: true });
 
-    let data = this.state.interests.filter(item => item.Selected == true);
+    let data = this.state.interests.filter((item) => item.Selected == true);
     let array = [];
 
-    Object.keys(data).map(function(key) {
-      array.push(data[key].InterestID);
+    Object.keys(data).map(function (key) {
+      array.push(data[key].InterestTitle);
     });
 
     let result = await this.props.member.InterestsUpdate(
@@ -90,39 +98,46 @@ export default class MessagesScreen extends React.Component {
       return;
     }
 
-    let nextScreen, title, interests;
+    let nextScreen, title, interests, progress;
 
     if (this.state.screen == "hobby") {
       nextScreen = "sport";
       interests = sport;
       title = "спорт и здоровье";
+      progress = 28;
     }
     if (this.state.screen == "sport") {
       nextScreen = "people";
       interests = people;
       title = "главное в людях";
+      progress = 42;
     }
     if (this.state.screen == "people") {
       nextScreen = "goals";
       interests = goals;
       title = "главное в жизни";
+      progress = 56;
     }
     if (this.state.screen == "goals") {
       nextScreen = "cinema";
       interests = cinema;
       title = "кино";
+      progress = 70;
     }
     if (this.state.screen == "cinema") {
       nextScreen = "food";
       interests = food;
       title = "любимая кухня";
+      progress = 84;
     }
     if (this.state.screen == "food") {
       nextScreen = "music";
       interests = music;
       title = "музыка";
+      progress = 100;
     }
     if (this.state.screen == "music") {
+      this.props.member.set("InterestsComplete", true);
       this.props.navigation.goBack();
     } else {
       this.setState(
@@ -130,7 +145,8 @@ export default class MessagesScreen extends React.Component {
           screen: nextScreen,
           title: title,
           interests: interests,
-          selected: []
+          selected: [],
+          progress: progress,
         },
         this.scroll
       );
@@ -155,12 +171,12 @@ export default class MessagesScreen extends React.Component {
             >
               <InterestContainer
                 style={{
-                  backgroundColor: item.Selected ? "#6E7588" : "#fff"
+                  backgroundColor: item.Selected ? "#6E7588" : "#fff",
                 }}
               >
                 <InterestText
                   style={{
-                    color: item.Selected ? "#fff" : "#252e48"
+                    color: item.Selected ? "#fff" : "#252e48",
                   }}
                 >
                   {item.Title}
@@ -181,19 +197,22 @@ export default class MessagesScreen extends React.Component {
           backgroundColor: "#fff",
           width: width,
           paddingLeft: scale(15),
-          paddingRight: scale(15)
+          paddingRight: scale(15),
         }}
       >
+        <ProgressBar
+          value={this.state.progress}
+          backgroundColorOnComplete="#6CC644"
+        />
         {this.state.loading && (
           <Progress.Circle
-            size={30}
             indeterminate={true}
             color="#525A71"
             borderWidth={2}
             style={{
               position: "absolute",
               top: getStatusBarHeight() + verticalScale(10),
-              right: scale(20)
+              right: scale(20),
             }}
           />
         )}
@@ -222,27 +241,38 @@ export default class MessagesScreen extends React.Component {
           <Skip>пропустить</Skip>
         </TouchableOpacity>*/}
         <Title>{this.state.title}</Title>
-        <ScrollView ref={ref => (this.scrollView = ref)}>
+        <ScrollView ref={(ref) => (this.scrollView = ref)}>
           {this.renderInterests()}
         </ScrollView>
         <TouchableOpacity onPress={this.continue} activeOpacity={0.9}>
           <Button
             style={{
               borderWidth: this.state.showButton ? scale(1) : 0,
-              borderColor: "#525A71"
+              borderColor: "#525A71",
             }}
           >
-            <ButtonText
-              style={{
-                color: this.state.showButton ? "#3b435a" : "#9499A7"
-              }}
-            >
-              далее
-            </ButtonText>
+            {this.state.progress == 100 ? (
+              <ButtonText
+                style={{
+                  color: this.state.showButton ? "#3b435a" : "#9499A7",
+                }}
+              >
+                готово
+              </ButtonText>
+            ) : (
+              <ButtonText
+                style={{
+                  color: this.state.showButton ? "#3b435a" : "#9499A7",
+                }}
+              >
+                далее
+              </ButtonText>
+            )}
+
             {this.state.showButton && (
               <ButtonCircle
                 style={{
-                  backgroundColor: "#F5CFD0"
+                  backgroundColor: "#F5CFD0",
                 }}
               />
             )}
@@ -285,8 +315,8 @@ const Interests = styled.View`
 const InterestContainer = styled.View`
   padding-top: ${scale(16) + `px`};
   padding-bottom: ${scale(16) + `px`};
-  padding-left: ${scale(14) + `px`};
-  padding-right: ${scale(14) + `px`};
+  padding-left: ${scale(8) + `px`};
+  padding-right: ${scale(8) + `px`};
   margin-right: ${scale(4) + `px`};
   margin-bottom: ${verticalScale(15) + `px`};
   border: 1px solid rgba(0, 0, 0, 0.06);

@@ -197,7 +197,7 @@ class ProfileScreen extends React.Component {
           <TouchableOpacity onPress={this.changeAvatar} activeOpacity={0.9}>
             <AvatarContainer>
               <Avatar my={true} />
-              {this.props.member.AvatarURL != "" ? (
+              {this.props.member.AvatarURI != "" ? (
                 <AvatarAddText>изменить фотографию</AvatarAddText>
               ) : (
                 <AvatarAddText>добавить фотографию</AvatarAddText>

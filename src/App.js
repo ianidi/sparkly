@@ -15,6 +15,11 @@ import FeedSettings from "./components/Modal/FeedSettings";
 import CameraUploadPreview from "./components/Modal/CameraUploadPreview";
 import CameraContentTooltip from "./components/Modal/CameraContentTooltip";
 import FeedSettingsTooltip from "./components/Modal/FeedSettingsTooltip";
+import FeedInterestsTooltip from "./components/Modal/FeedInterestsTooltip";
+import FeedFaveTooltip from "./components/Modal/FeedFaveTooltip";
+
+import { Provider as ReduxProvider } from "react-redux";
+import reduxStore from "./chat/store";
 
 enableScreens();
 
@@ -41,7 +46,9 @@ const ModalStack = createModalStack(
     FeedSettings,
     CameraUploadPreview,
     CameraContentTooltip,
-    FeedSettingsTooltip
+    FeedSettingsTooltip,
+    FeedInterestsTooltip,
+    FeedFaveTooltip
   },
   modalOptions
 );
@@ -49,16 +56,18 @@ const ModalStack = createModalStack(
 export default function App() {
   return (
     <Provider {...store}>
-      <SafeAreaProvider>
-        <NavigationContainer ref={navigationRef}>
-          <ActionSheetProvider>
-            <ModalProvider stack={ModalStack}>
-              <Navigation />
-              <FlashMessage />
-            </ModalProvider>
-          </ActionSheetProvider>
-        </NavigationContainer>
-      </SafeAreaProvider>
+      <ReduxProvider store={reduxStore}>
+        <SafeAreaProvider>
+          <NavigationContainer ref={navigationRef}>
+            <ActionSheetProvider>
+              <ModalProvider stack={ModalStack}>
+                <Navigation />
+                <FlashMessage />
+              </ModalProvider>
+            </ActionSheetProvider>
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </ReduxProvider>
     </Provider>
   );
 }

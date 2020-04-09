@@ -4,7 +4,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Dimensions,
-  BackHandler
+  BackHandler,
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-view";
 import styled from "styled-components/native";
@@ -12,6 +12,7 @@ import { scale, verticalScale } from "react-native-size-matters";
 import images from "../constants/images";
 import FeedCircles from "../components/FeedCircles";
 import Avatar from "../components/Avatar";
+import AuthService from "../chat/services/auth-service";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,19 +27,42 @@ export default class HomeScreen extends React.Component {
     this.state = {
       Notifications: false,
       popupFeed: false,
-      popupCamera: false
+      popupCamera: false,
     };
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     this.backHandler = BackHandler.addEventListener("hardwareBackPress", () => {
       this.arrowBackPress();
       return true;
     });
+
+    await this.initChat();
   };
 
-  feedInit = () => {
-    this.props.feed.init();
+  initChat = async () => {
+    const dataUser = {
+      full_name: this.props.member.ChatLogin,
+      login: this.props.member.ChatLogin,
+      password: this.props.member.ChatPassword,
+    };
+
+    const loggedIn = await AuthService.init();
+
+    if (!loggedIn) {
+      AuthService.signUp(dataUser)
+        .then(() => {
+          //ChatService.setUpListeners();
+          console.log("Account successfully registered");
+        })
+        .catch((error) => {
+          console.log(`Error.\n\n${JSON.stringify(error)}`);
+        });
+    }
+  };
+
+  feedInit = async () => {
+    await this.props.feed.InitFeed();
   };
 
   componentWillUnmount() {
@@ -87,6 +111,11 @@ export default class HomeScreen extends React.Component {
       return;
     }
     this.props.navigation.navigate("FeedMy");
+  };
+
+  navigateDialogs = async () => {
+    await this.props.member.MatchGet();
+    this.props.navigation.navigate("Dialogs");
   };
 
   renderHome = () => {
@@ -145,7 +174,7 @@ export default class HomeScreen extends React.Component {
                         borderColor: this.props.member
                           .MemberFeedRestrictUniversity
                           ? "#525A71"
-                          : "#D9D9D9"
+                          : "#D9D9D9",
                       }}
                     />
                   </CardCircles>
@@ -174,14 +203,14 @@ export default class HomeScreen extends React.Component {
               <CardMy
                 style={{
                   borderWidth: scale(1),
-                  borderColor: "#ebebeb"
+                  borderColor: "#ebebeb",
                 }}
               >
                 <CardImages>
                   <CardCircles>
                     <CardCircle
                       style={{
-                        backgroundColor: "#E6E6E6"
+                        backgroundColor: "#E6E6E6",
                       }}
                     />
                   </CardCircles>
@@ -222,7 +251,7 @@ export default class HomeScreen extends React.Component {
                   {this.state.popupCamera && (
                     <PopupContainer
                       style={{
-                        right: -10
+                        right: -10,
                       }}
                     >
                       <TouchableOpacity
@@ -231,7 +260,7 @@ export default class HomeScreen extends React.Component {
                           position: "absolute",
                           top: scale(10),
                           right: scale(10),
-                          zIndex: 1000
+                          zIndex: 1000,
                         }}
                         onPress={this.popupCameraClose}
                         hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -248,7 +277,7 @@ export default class HomeScreen extends React.Component {
                   {this.state.popupFeed && (
                     <PopupContainer
                       style={{
-                        right: -10
+                        right: -10,
                       }}
                     >
                       <TouchableOpacity
@@ -257,7 +286,7 @@ export default class HomeScreen extends React.Component {
                           position: "absolute",
                           top: scale(10),
                           right: scale(10),
-                          zIndex: 1000
+                          zIndex: 1000,
                         }}
                         onPress={this.popupFeedClose}
                         hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -277,7 +306,7 @@ export default class HomeScreen extends React.Component {
               </CardSmall>
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate("Messages")}
+              onPress={this.navigateDialogs}
               activeOpacity={0.9}
             >
               <CardSmall>
@@ -294,7 +323,7 @@ export default class HomeScreen extends React.Component {
           hitSlop={{ top: 20, right: 20, bottom: 20, left: 20 }}
           style={{
             marginTop: verticalScale(50),
-            marginBottom: verticalScale(20)
+            marginBottom: verticalScale(20),
           }}
         >
           <ButtonContainer>
@@ -314,7 +343,7 @@ export default class HomeScreen extends React.Component {
         style={{
           flex: 1,
           backgroundColor: "#fff",
-          width: width
+          width: width,
         }}
       >
         <ScrollView showsVerticalScrollIndicator={false}>

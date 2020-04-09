@@ -16,7 +16,8 @@ const FeedModel = types.model({
   //Thumbnail: types.maybeNull(types.string),
   MemberName: types.maybeNull(types.string),
   UniversityAbbr: types.maybeNull(types.string),
-  AvatarURI: types.optional(types.string, "")
+  AvatarURI: types.optional(types.string, ""),
+  ChatLogin: types.optional(types.string, ""),
   //Ищу соседа
 });
 
@@ -31,9 +32,9 @@ export const FeedStore = types
     MyFeedDate: types.maybeNull(types.string), //types.Date
     FeedIndexPrevious: types.optional(types.number, 0),
     FeedIndex: types.optional(types.number, 0),
-    FeedIndexNext: types.optional(types.number, 0)
+    FeedIndexNext: types.optional(types.number, 0),
   })
-  .views(self => ({
+  .views((self) => ({
     get IndexPrevious() {
       let index = self.FeedIndex - 1;
 
@@ -69,9 +70,9 @@ export const FeedStore = types
     },
     get FeedNext() {
       return self.Feed[self.FeedIndexNext];
-    }
+    },
   }))
-  .actions(self => ({
+  .actions((self) => ({
     setIndexes() {
       self.FeedIndexPrevious = self.IndexPrevious;
       self.FeedIndexNext = self.IndexNext;
@@ -86,6 +87,7 @@ export const FeedStore = types
       self[fieldName] = !self[fieldName];
     },
     swipe(direction) {
+      console.log(self.FeedIndex, direction);
       if (direction == "left") {
         self.FeedIndex = self.IndexPrevious;
       } else {
@@ -95,12 +97,12 @@ export const FeedStore = types
     afterCreate() {
       //onSnapshot(self, snapshot => console.log("snap", snapshot));
     },
-    init() {
-      self.InitFeed();
-    },
-    InitFeed: flow(function*() {
+    InitFeed: flow(function* (navigate = true) {
       try {
-        const response = yield api.get("/feed");
+        const response = yield api.post("/feed", {
+          RestrictUniversity: self.RestrictUniversity,
+          Gender: self.Gender,
+        });
 
         console.log(JSON.stringify(response.data));
 
@@ -111,22 +113,30 @@ export const FeedStore = types
               "Подождите, пока в ленте появятся анкеты",
               "info"
             );
+            if (navigate) {
+              self.RestrictUniversity = false;
+              self.Gender = "any";
+            }
           }
           if (response.data.result.length > 0) {
             applySnapshot(self.Feed, response.data.result);
-            NavigationService.navigate("Feed");
+            self.FeedIndex = 0;
+            self.setIndexes();
+            if (navigate) {
+              NavigationService.navigate("Feed");
+            }
           }
         }
       } catch (error) {
         console.log("error", JSON.stringify(error));
       }
     }),
-    Report: flow(function*(reason, type) {
+    Report: flow(function* (reason, type) {
       try {
         const response = yield api.post("/report", {
           FeedID: self.FeedCurrent.FeedID, //SubjectID
           Reason: reason,
-          Type: type
+          Type: type,
         });
 
         if (response.ok && response.data.status == true) {
@@ -144,11 +154,11 @@ export const FeedStore = types
         return false;
       }
     }),
-    Fave: flow(function*() {
+    Fave: flow(function* () {
       try {
         const response = yield api.post("/feed/fave", {
           FeedID: self.FeedCurrent.FeedID,
-          Fave: !self.FeedCurrent.Fave
+          Fave: !self.FeedCurrent.Fave,
         });
         console.log(JSON.stringify(response.data));
 
@@ -162,5 +172,5 @@ export const FeedStore = types
         console.log("error", JSON.stringify(error));
         return false;
       }
-    })
+    }),
   }));

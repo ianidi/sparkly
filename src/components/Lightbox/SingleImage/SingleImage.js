@@ -218,7 +218,7 @@ export default class SingleImage extends PureComponent {
     </CloseContainer>
   );
 
-  renderFullscreenContent = url => () => {
+  renderFullscreenContent = uri => () => {
     const { panning } = this.state;
     const containerStyle = [
       this.getSwipeableStyle(),

@@ -7,16 +7,20 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  BackHandler
+  BackHandler,
 } from "react-native";
+import ConnectyCube from "react-native-connectycube";
+import ChatService from "../chat/services/chat-service";
+import AuthService from "../chat/services/auth-service";
+import PushNotificationService from "../chat/services/push-notification";
 import {
   TapGestureHandler,
   PanGestureHandler,
-  State
+  State,
 } from "react-native-gesture-handler";
 import {
   getStatusBarHeight,
-  getBottomSpace
+  getBottomSpace,
 } from "react-native-iphone-x-helper";
 import Animated from "react-native-reanimated";
 import { withModal } from "react-native-modalfy";
@@ -34,7 +38,7 @@ function runSpring(clock, value, dest) {
     finished: new Value(0),
     velocity: new Value(0),
     position: new Value(0),
-    time: new Value(0)
+    time: new Value(0),
   };
 
   const config = {
@@ -44,7 +48,7 @@ function runSpring(clock, value, dest) {
     overshootClamping: false,
     restSpeedThreshold: 1,
     restDisplacementThreshold: 0.5,
-    toValue: new Value(0)
+    toValue: new Value(0),
   };
 
   return [
@@ -53,16 +57,16 @@ function runSpring(clock, value, dest) {
       set(state.velocity, 0),
       set(state.position, value),
       set(config.toValue, dest),
-      startClock(clock)
+      startClock(clock),
     ]),
     spring(clock, state, config),
     cond(state.finished, stopClock(clock)),
-    state.position
+    state.position,
   ];
 }
 
 const { width, height } = Dimensions.get("window");
-const toRadians = angle => angle * (Math.PI / 180);
+const toRadians = (angle) => angle * (Math.PI / 180);
 const rotatedWidth =
   width * Math.sin(toRadians(90 - 15)) + height * Math.sin(toRadians(15));
 const {
@@ -85,11 +89,12 @@ const {
   Value,
   concat,
   interpolate,
-  Extrapolate
+  Extrapolate,
 } = Animated;
 
 @inject("feed")
 @inject("main")
+@inject("member")
 @observer
 class FeedScreen extends React.Component {
   constructor(props) {
@@ -98,7 +103,8 @@ class FeedScreen extends React.Component {
     this.state = {
       faveAnimationProgress: new RNAnimated.Value(0),
       faveAnimationVisible: false,
-      loadingFave: false
+      loadingFave: false,
+      swiped: false,
     };
 
     doubleTapRef = React.createRef();
@@ -116,14 +122,45 @@ class FeedScreen extends React.Component {
             translationX: this.translationX,
             translationY: this.translationY,
             velocityX: this.velocityX,
-            state: this.gestureState
-          }
-        }
+            state: this.gestureState,
+          },
+        },
       ],
       { useNativeDriver: true }
     );
     this.init();
+
+    this.initChat();
   }
+
+  initChat = async () => {
+    const loggedIn = await AuthService.init();
+    if (loggedIn) {
+      ChatService.setUpListeners();
+    } else {
+      await this.chatLogin();
+    }
+
+    ChatService.fetchDialogsFromServer().then(() => {
+      PushNotificationService.init(this.props.navigation);
+    });
+  };
+
+  chatLogin = async () => {
+    const dataUser = {
+      full_name: this.props.member.ChatLogin,
+      login: this.props.member.ChatLogin,
+      password: this.props.member.ChatPassword,
+    };
+
+    AuthService.signIn(dataUser)
+      .then(() => {
+        ChatService.setUpListeners();
+      })
+      .catch((error) => {
+        console.log(`Error.\n\n${JSON.stringify(error)}`);
+      });
+  };
 
   init = () => {
     const clockX = new Clock();
@@ -134,7 +171,7 @@ class FeedScreen extends React.Component {
       velocityX,
       gestureState,
       offsetY,
-      offsetX
+      offsetX,
     } = this;
     gestureState.setValue(State.UNDETERMINED);
     translationX.setValue(0);
@@ -156,7 +193,7 @@ class FeedScreen extends React.Component {
       [
         set(translationY, runSpring(clockY, translationY, 0)),
         set(offsetY, translationY),
-        translationY
+        translationY,
       ],
       cond(
         eq(gestureState, State.BEGAN),
@@ -164,15 +201,19 @@ class FeedScreen extends React.Component {
         translationY
       )
     );
+
     this.translateX = cond(
       eq(gestureState, State.END),
       [
         set(translationX, runSpring(clockX, translationX, snapPoint)),
         set(offsetX, translationX),
         cond(and(eq(clockRunning(clockX), 0), neq(translationX, 0)), [
-          call([translationX], this.swipped)
+          call([translationX], (translationX) => {
+            console.log("a");
+            this.swipped(translationX);
+          }),
         ]),
-        translationX
+        translationX,
       ],
       cond(
         and(eq(gestureState, State.ACTIVE), clockRunning(clockX)),
@@ -193,7 +234,16 @@ class FeedScreen extends React.Component {
     if (this.props.main.ModalFeedSettingsTooltip == false) {
       this.props.main.set("ModalFeedSettingsTooltip", true);
       this.props.modal.openModal("FeedSettingsTooltip");
+    } else if (
+      this.props.main.ModalFeedInterests == false &&
+      this.props.member.InterestsComplete == false
+    ) {
+      this.props.modal.openModal("FeedInterestsTooltip");
     }
+
+    console.log(translationX);
+
+    this.setState({ swiped: false });
 
     if (translationX > 0) {
       this.props.feed.swipe("left");
@@ -203,6 +253,11 @@ class FeedScreen extends React.Component {
   };
 
   onLoad = () => {
+    if (this.state.swiped) {
+      return;
+    }
+    this.setState({ swiped: true });
+    console.log("load");
     this.init();
     this.props.feed.setIndexes();
   };
@@ -219,11 +274,35 @@ class FeedScreen extends React.Component {
     this.setState({ loadingFave: false });
 
     if (result && this.props.feed.FeedCurrent.Fave) {
+      if (
+        this.props.main.ModalFeedFave == false &&
+        this.props.member.AvatarURI == ""
+      ) {
+        this.props.main.set("ModalFeedFave", true);
+        this.props.modal.openModal("FeedFaveTooltip");
+      }
       this.playFaveAnimation();
+      this.createChatDialog();
     }
   };
 
-  faveByDoubleTap = event => {
+  createChatDialog = () => {
+    try {
+      const searchParams = { login: this.props.feed.FeedCurrent.ChatLogin };
+      ConnectyCube.users
+        .get(searchParams)
+        .then((result) => {
+          const params = {
+            type: 3,
+            occupants_ids: result.user.id,
+          };
+          const response = ConnectyCube.chat.dialog.create(params);
+        })
+        .catch((error) => {});
+    } catch (err) {}
+  };
+
+  faveByDoubleTap = (event) => {
     if (event.nativeEvent.state === State.ACTIVE) {
       this.fave();
     }
@@ -234,17 +313,19 @@ class FeedScreen extends React.Component {
       return;
     }
 
-    this.setState(s => ({
+    this.setState((s) => ({
       ...s,
       faveAnimationProgress: new RNAnimated.Value(0),
-      faveAnimationVisible: true
+      faveAnimationVisible: true,
     }));
 
     RNAnimated.timing(this.state.faveAnimationProgress, {
       toValue: 1,
       duration: 2000,
-      easing: RNEasing.linear
-    }).start(() => this.setState(s => ({ ...s, faveAnimationVisible: false })));
+      easing: RNEasing.linear,
+    }).start(() =>
+      this.setState((s) => ({ ...s, faveAnimationVisible: false }))
+    );
   };
 
   componentDidMount = () => {
@@ -284,9 +365,9 @@ class FeedScreen extends React.Component {
       {
         options,
         cancelButtonIndex,
-        destructiveButtonIndex
+        destructiveButtonIndex,
       },
-      buttonIndex => {
+      (buttonIndex) => {
         if (buttonIndex == 0) {
           this.openReportModal();
         }
@@ -304,32 +385,32 @@ class FeedScreen extends React.Component {
       interpolate(translateX, {
         inputRange: [-width / 2, width / 2],
         outputRange: [15, -15],
-        extrapolate: Extrapolate.CLAMP
+        extrapolate: Extrapolate.CLAMP,
       }),
       "deg"
     );
     const swipeLeft = interpolate(translateX, {
       inputRange: [0, 1],
-      outputRange: [0, 1]
+      outputRange: [0, 1],
     });
     const swipeRight = interpolate(translateX, {
       inputRange: [-1, 0],
-      outputRange: [1, 0]
+      outputRange: [1, 0],
     });
     const style = {
       ...StyleSheet.absoluteFillObject,
       zIndex: 5,
-      transform: [{ translateX }, { translateY }, { rotateZ }]
+      transform: [{ translateX }, { translateY }, { rotateZ }],
     };
     //, backgroundColor: "#fff"
     return (
       <View
         style={{
-          flex: 1
+          flex: 1,
         }}
       >
         <ReportModal
-          ref={el => {
+          ref={(el) => {
             this.reportModal = el;
           }}
         />
@@ -354,7 +435,7 @@ class FeedScreen extends React.Component {
               right: 0,
               bottom: 0,
               justifyContent: "center",
-              alignItems: "center"
+              alignItems: "center",
             }}
             pointerEvents={"none"}
           >
@@ -362,7 +443,7 @@ class FeedScreen extends React.Component {
               source={images.LottieFave}
               autoPlay
               style={{
-                width: width * 0.7
+                width: width * 0.7,
               }}
               progress={this.state.faveAnimationProgress}
             />
@@ -376,14 +457,14 @@ class FeedScreen extends React.Component {
             position: "absolute",
             zIndex: 10,
             bottom: getBottomSpace() + verticalScale(140),
-            right: scale(29)
+            right: scale(29),
           }}
         >
           <FaveContainer
             style={{
               backgroundColor: this.props.feed.FeedCurrent.Fave
                 ? "#f5cfd0"
-                : "#fff"
+                : "#fff",
             }}
           >
             <FaveImage source={images.Fave} />
@@ -399,7 +480,7 @@ class FeedScreen extends React.Component {
               position: "absolute",
               zIndex: 3000,
               bottom: getBottomSpace() + verticalScale(40),
-              alignSelf: "center"
+              alignSelf: "center",
             }}
           >
             <FilterContainer>
@@ -425,7 +506,7 @@ class FeedScreen extends React.Component {
           <View
             style={{
               flex: 1,
-              zIndex: 5
+              zIndex: 5,
             }}
           >
             <FeedCard {...{ swipeLeft, swipeRight }} />

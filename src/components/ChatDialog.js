@@ -1,20 +1,24 @@
 import React from "react";
+import { inject, observer } from "mobx-react";
 import { LayoutAnimation, Dimensions, Alert } from "react-native";
 import styled from "styled-components";
 import { scale, verticalScale } from "react-native-size-matters";
-import { observer } from "mobx-react";
 import images from "../constants/images";
 import moment from "moment";
+import "moment/locale/ru";
+import { fromUnixTime } from "date-fns";
 
 const { width, height } = Dimensions.get("window");
 
 const CustomLayoutAnimation = {
   duration: 200,
   update: {
-    type: LayoutAnimation.Types.easeInEaseOut
-  }
+    type: LayoutAnimation.Types.easeInEaseOut,
+  },
 };
 
+@inject("main")
+@inject("member")
 @observer
 export default class ChatDialog extends React.Component {
   //componentWillMount() {
@@ -33,14 +37,14 @@ export default class ChatDialog extends React.Component {
         [
           {
             text: "Не удалять",
-            style: "cancel"
+            style: "cancel",
           },
           {
             text: "Удалить",
             onPress: () => {
               this.removeItem();
-            }
-          }
+            },
+          },
         ],
         { cancelable: false }
       );
@@ -53,25 +57,39 @@ export default class ChatDialog extends React.Component {
 
   render() {
     const { dialog } = this.props;
+    const info = this.props.member.dialogGet(dialog.name);
+
     return (
       <Container>
         <ImagesContainer>
-          <AvatarContainer>
-            <AvatarImage source={images.Avatar_temp} />
-          </AvatarContainer>
-          {true && (
-            <MatchContainer
+          {info["AvatarURI"] != null && info["AvatarURI"] != "" ? (
+            <AvatarContainer>
+              <AvatarImage source={{ uri: info["AvatarURI"] }} />
+            </AvatarContainer>
+          ) : (
+            <MemberCircle
               style={{
-                backgroundColor: "#984446"
+                borderWidth: this.props.member.RoommateSearch ? scale(2) : 0,
+                borderColor: "#FDE300",
               }}
             >
-              <MatchText style={{ color: "#fff" }}>5</MatchText>
-            </MatchContainer>
+              <MemberImage source={images.Member} />
+            </MemberCircle>
           )}
-          {false && (
+          {info["MatchCount"] > 0 ? (
             <MatchContainer
               style={{
-                backgroundColor: "#9499A7"
+                backgroundColor: "#984446",
+              }}
+            >
+              <MatchText style={{ color: "#fff" }}>
+                {info["MatchCount"]}
+              </MatchText>
+            </MatchContainer>
+          ) : (
+            <MatchContainer
+              style={{
+                backgroundColor: "#9499A7",
               }}
             >
               <MatchText style={{ color: "#252e48" }}>?</MatchText>
@@ -81,24 +99,34 @@ export default class ChatDialog extends React.Component {
 
         <Content>
           <TitleContainer>
-            <Title>{dialog.to.phone}</Title>
+            <Title>{info["Name"]}</Title>
             <Status>
-              <TickRead source={images.TickRead} />
+              {false && <TickRead source={images.TickRead} />}
               {false && <NoTick />}
-              {dialog.lastMessage != null && <Date>12.25</Date>}
+              {dialog.last_message != null && (
+                <Date>
+                  {moment(fromUnixTime(dialog.last_message_date_sent))
+                    .locale("ru")
+                    .format("H:mm")}
+                </Date>
+              )}
             </Status>
           </TitleContainer>
           <MessageContainer>
-            {dialog.lastMessage != null ? (
-              <Message numberOfLines={2}>{dialog.lastMessage.text}</Message>
+            {dialog.last_message != null ? (
+              <Message numberOfLines={2}>{dialog.last_message}</Message>
             ) : (
               <MessageEmpty>Список сообщений пуст</MessageEmpty>
             )}
-            <MessageCountContainer>
-              <MessageCount>
-                <MessageCountText>1</MessageCountText>
-              </MessageCount>
-            </MessageCountContainer>
+            {dialog.unread_messages_count > 0 && (
+              <MessageCountContainer>
+                <MessageCount>
+                  <MessageCountText>
+                    {dialog.unread_messages_count}
+                  </MessageCountText>
+                </MessageCount>
+              </MessageCountContainer>
+            )}
           </MessageContainer>
         </Content>
       </Container>
@@ -108,6 +136,20 @@ export default class ChatDialog extends React.Component {
               .unix(dialog.lastMessage.date)
               .locale("en")
               .format("HH:mm")}*/
+
+const MemberCircle = styled.View`
+  width: ${scale(40) + `px`};
+  height: ${scale(40) + `px`};
+  border-radius: 100px;
+  background: #f0f0f0;
+  align-items: center;
+  justify-content: center;
+`;
+
+const MemberImage = styled.Image`
+  width: ${scale(24) + `px`};
+  height: ${scale(24) + `px`};
+`;
 
 const Container = styled.View`
   flex-direction: row;
